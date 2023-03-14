@@ -1,3 +1,4 @@
-S -> aA
-A -> aA | bB
-B -> aA | bB | $
+S -> aA | bB | C
+A -> cA | $
+B -> dB | $
+C -> cB
