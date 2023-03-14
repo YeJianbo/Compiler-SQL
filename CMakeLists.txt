@@ -3,4 +3,4 @@ project(LAXER)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(LAXER main.cpp)
+add_executable(LAXER main.cpp FA.cpp FA.h)

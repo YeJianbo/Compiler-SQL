@@ -55,6 +55,12 @@ build CMakeFiles/LAXER.dir/main.cpp.obj: CXX_COMPILER__LAXER_Debug E$:/Code/JetB
   OBJECT_DIR = CMakeFiles\LAXER.dir
   OBJECT_FILE_DIR = CMakeFiles\LAXER.dir
 
+build CMakeFiles/LAXER.dir/FA.cpp.obj: CXX_COMPILER__LAXER_Debug E$:/Code/JetBrain/CLion/LAXER/FA.cpp || cmake_object_order_depends_target_LAXER
+  DEP_FILE = CMakeFiles\LAXER.dir\FA.cpp.obj.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles\LAXER.dir
+  OBJECT_FILE_DIR = CMakeFiles\LAXER.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target LAXER
@@ -63,7 +69,7 @@ build CMakeFiles/LAXER.dir/main.cpp.obj: CXX_COMPILER__LAXER_Debug E$:/Code/JetB
 #############################################
 # Link the executable LAXER.exe
 
-build LAXER.exe: CXX_EXECUTABLE_LINKER__LAXER_Debug CMakeFiles/LAXER.dir/main.cpp.obj
+build LAXER.exe: CXX_EXECUTABLE_LINKER__LAXER_Debug CMakeFiles/LAXER.dir/main.cpp.obj CMakeFiles/LAXER.dir/FA.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\LAXER.dir
