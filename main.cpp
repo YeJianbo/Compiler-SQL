@@ -16,6 +16,30 @@ struct Token {
     int line;       // 所在行数
 };
 
+//单行词法分析
+set<Token> LAbyLine(FA dfa, string line){
+
+}
+
+//词法分析
+//传入dfa与文件路径，对其进行词法分析，切分得到Token集
+set<Token> LexicalAnalyze(FA dfa,string path){
+    set<Token> tokens;
+    string line;
+    ifstream file(path);
+    if (!file){
+        cout << "找不到源代码文件！" << endl;
+        return tokens;
+    }
+    //从file中获取一行，保存在line中
+    while(getline(file,line)){
+        addAllElements(tokens,LAbyLine(dfa, line));
+    }
+    return tokens;
+}
+
+
+
 
 int main() {
     //根据文法获取NFA
@@ -47,6 +71,11 @@ int main() {
 //    fa.minimizeDFA();
     dfa.printDFA();
     //进行词法分析
-
+    set<Token> tokens = LexicalAnalyze(dfa,SOURCE_PATH);
+    for (set<Token>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+        cout << it->line << ": " << it->type <<" "<< it->value << endl; // 打印set中的值
+    }
     return 0;
 }
+
+
