@@ -75,8 +75,7 @@ void FA::GrammarToNFA(string path){
         //处理完成，清空字符串
         line.clear();
     }while(getline(file,line)&&!line.empty());
-
-
+    file.close();
 }
 
 //处理单条产生式，已去除空格
@@ -108,9 +107,24 @@ void FA::deal(string line){
             default:
                 input = '$';
         }
-        rs = rs.substr(1);
+        rs = rs.substr(2);
+        //是终态，记录左边
         if (rs.empty()){
-            rs = "EndState_"+to_string(endState.size()+1);
+            string ss = "";
+            //标识符和关键字
+            if (startsWith("AD",ls)){
+                ss = "A";
+            }else if (startsWith("E",ls)){
+                //运算符
+                ss = "E";
+            }else if (startsWith("Separator",ls)){
+                //Separator
+                ss = "S";
+            }else if (startsWith("A",ls) || startsWith("B",ls) || startsWith("C",ls) || startsWith("D",ls)){
+                //常量
+                ss = "C";
+            }
+            rs = "EndState_"+to_string(endState.size()+1) + ss;
             insertIntoEndState(rs);
         }
     }else{
@@ -119,7 +133,21 @@ void FA::deal(string line){
         //去掉第一位，剩下的是下一状态
         rs = rs.substr(1);
         if (rs.empty()){
-            rs = "EndState_"+to_string(endState.size()+1);
+            string ss = "";
+            //标识符和关键字
+            if (startsWith("AD",ls)){
+                ss = "I";
+            }else if (startsWith("E",ls)){
+                //运算符
+                ss = "O";
+            }else if (startsWith("Separator",ls)){
+                //Separator
+                ss = "S";
+            }else if (startsWith("A",ls) || startsWith("B",ls) || startsWith("C",ls) || startsWith("D",ls)){
+                //常量
+                ss = "C";
+            }
+            rs = "EndState_"+to_string(endState.size()+1)+ss;
             insertIntoEndState(rs);
         }
     }
@@ -131,12 +159,12 @@ void FA::deal(string line){
 
 //将NFA转换为DFA
 void FA::TransToDFA(FA nfa){
-    set<Node> n = nfa.closure(nfa.startState.front());
+    set<Node> n = nfa.closure(nfa.startState);
 //    for (set<Node>::iterator it2 = n.begin(); it2 != n.end(); ++it2) {
 //        cout<<it2->id<<" "<<it2->name<<endl;
 //    }
-    Node start = insertIntoStartState("Start"+to_string((startState.size()+1)));
-    stateCorr["Start_"+to_string(startState.size())] = n;
+    Node start = insertIntoStartState("Start");
+    stateCorr["Start"] = n;
     charSet = nfa.getCharSet();
     charSet.erase('$');
     deal2(nfa,start,n);
@@ -150,12 +178,22 @@ void FA::deal2(FA nfa, Node start,set<Node> n) {
         // 取得下一状态的集合（已做闭包）
         set<Node> n2 = nfa.move(*it2,n,nfa);
         string buf;
+        string ss = "";
         //flag3 = 0,说明没有下一状态
         if(n2.empty())
             flag3 = 0;
         //如果包含的节点中有终态，标记
         if (nodeStartsWith(n2,"EndState")){
             flag2 = 1;
+            if(hasNode(n2, "EndState", "I")){
+                ss = "_I";
+            }else if (hasNode(n2,"EndState","O")){
+                ss = "_O";
+            }else if (hasNode(n2,"EndState","S")){
+                ss = "_S";
+            }else if(hasNode(n2,"EndState","C")){
+                ss = "_C";
+            }
         }
         //检查该状态是否存在
         for (auto it4 = stateCorr.begin(); it4 != stateCorr.end(); ++it4) {
@@ -177,7 +215,7 @@ void FA::deal2(FA nfa, Node start,set<Node> n) {
             if (!flag) {
                 //flag2 == 1,说明该状态为终态，需要添加进终态集
                 if (flag2) {
-                    name = "EndState" + to_string(endState.size() + 1);
+                    name = "EndState" + to_string(endState.size() + 1) + ss;
                     newN = insertIntoEndState(name);
                 }
                 newN = insertIntoState(name);
@@ -228,25 +266,14 @@ void FA::printCharSet() {
 }
 
 Node FA::insertIntoStartState(string name) {
-    int flag = 0;
-    Node node;
     // 使用迭代器遍历 startState
-    for (auto it = startState.begin(); it != startState.end(); ++it) {
-        //已有该状态，则不插入
-        if (it->name == name) {
-            flag = 1;
-            node.name = it->name;
-            node.id = it->id;
-            break;
-        }
+    if (startState.name.empty()) {
+        startState.name = name;
+        startState.id = 1;
+        count++;
+        States.insert(startState);
     }
-    //找不到状态,新增该状态
-    if (!flag){
-        node = {count++,name};
-        startState.push_back(node);
-        States.push_back(node);
-    }
-    return node;
+    return startState;
 }
 
 Node FA::insertIntoEndState(string name) {
@@ -264,9 +291,9 @@ Node FA::insertIntoEndState(string name) {
     }
     //找不到状态,新增该状态
     if (!flag){
-        node = {count++,name};
-        endState.push_back(node);
-        States.push_back(node);
+        node = {++count,name};
+        endState.insert(node);
+        States.insert(node);
     }
     return node;
 }
@@ -286,8 +313,8 @@ Node FA::insertIntoState(string name) {
     }
     //找不到状态,新增该状态
     if (!flag){
-        node = {count++,name};
-        States.push_back(node);
+        node = {++count,name};
+        States.insert(node);
     }
     return node;
 }
@@ -327,6 +354,15 @@ const map<Node, map<char, set<Node>>> &FA::getTransNfa() const {
 const map<Node, map<char, Node>> &FA::getTransDfa() const {
     return transDFA;
 }
+
+const set<Node> &FA::getEndState() const {
+    return endState;
+}
+
+const Node &FA::getStartState() const {
+    return startState;
+}
+
 
 string trim(string str) {
     size_t first = str.find_first_not_of(' ');
@@ -372,4 +408,50 @@ bool Node::operator<(const Node &o) const {
 
 bool Node::operator==(const Node &o) const {
     return id == o.id;
+}
+
+
+bool startsWith(const string &prefix, const string &str) {
+    if (str.size() < prefix.size()) {
+        return false;
+    }
+    return std::equal(prefix.begin(), prefix.end(), str.begin());
+}
+
+bool hasNode(set<Node>& nodes, string string1, string string2) {
+    for (auto it = nodes.begin(); it != nodes.end(); ++it) {
+        if (it->name.substr(0, string1.length()) == string1 && it->name.substr(it->name.length() - string2.length()) == string2) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool isNodeNameEndsWith(const Node& node, const string& string2) {
+    return (node.name.size() >= string2.size() &&
+            node.name.compare(node.name.size() - string2.size(), string2.size(), string2) == 0);
+}
+
+set<string> readWordsFromFile(string path) {
+    set<string> words;
+    ifstream file(path);
+    string word;
+    if (!file){
+        cout<<"找不到关键字文件！"<<endl;
+        return words;
+    }
+    while (getline(file,word)) {
+        words.insert(trim(word));
+    }
+    file.close();
+    return words;
+}
+
+template <typename T>
+void addVector(vector<T>& v1, vector<T>& v2) {
+    v2.insert(v2.end(), v1.begin(), v1.end());
+}
+
+bool Token::operator<(const Token &o) const {
+    return value.compare(o.value);
 }

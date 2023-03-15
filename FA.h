@@ -5,6 +5,7 @@
 
 #define GRAMMAR_PATH "E:\\Code\\JetBrain\\CLion\\LAXER\\GRAMMAR.txt"
 #define SOURCE_PATH "E:\\Code\\JetBrain\\CLion\\LAXER\\SOURCE_CODE.txt"
+#define KEYWORD_PATH "E:\\Code\\JetBrain\\CLion\\LAXER\\KEYWORD.txt"
 
 
 using namespace std;
@@ -21,6 +22,23 @@ struct Node{ //节点
     bool operator == (const Node &o) const;
 };
 
+// Token类型枚举
+enum TokenType {
+    KEYWORD,            //关键词，比如if、for、while、int
+    IDENTIFIER,         //标识符，一般的单词，字母或下划线开头
+    CONSTANT,           //常量，数字，比如29+52i（虚数）、1.14（小数）、514（整数）
+    DELIMITER,          //界符，比如{}、（）、""、''、[]、<>
+    OPERATOR            //运算符，比如”+“、”-“、”*“、”/“、”+=“
+};
+
+// Token结构体
+struct Token {
+    TokenType type; // Token类型
+    string value;   // Token值
+    int line;       // 所在行数
+
+    bool operator<(const Token &o) const;
+};
 
 string trim(string str);
 
@@ -31,10 +49,22 @@ bool setsAreEqual(set<Node> s1, set<Node> s2);
 template <typename T>
 void addAllElements(std::set<T>& destSet, const std::set<T>& sourceSet);
 
+bool startsWith(const std::string& prefix, const std::string& str);
+
+bool hasNode(set<Node>& nodes, string string1, string string2);
+
+bool isNodeNameEndsWith(const Node& node, const string& string2);
+
+set<string> readWordsFromFile(string path);
+
+template <typename T>
+void addVector(vector<T>& v1, vector<T>& v2);
+
+
 class FA{   //自动机M = (K, ∑, f, S, Z)
-    vector<Node> startState;                   //初态集S
-    vector<Node> endState;                     //终态集Z
-    vector<Node> States;                       //状态集K
+    Node startState;                   //初态集S
+    set<Node> endState;                     //终态集Z
+    set<Node> States;                       //状态集K
     set<char> charSet;                      //字母表
     map<Node,map<char,set<Node>>> transNFA; //NFA状态转移fN(Node:当前状态 map：不同输入对应的状态转移)
     map<Node,map<char,Node>> transDFA;      //DFA状态转移fD
@@ -73,5 +103,10 @@ public:
 
     void deal2(FA nfa,Node start, set<Node> n);
 
+    const Node &getStartState() const;
+
+    const set<Node> &getEndState() const;
+
     set<Node> move(char input,set<Node> node,FA nfa);
+
 };
