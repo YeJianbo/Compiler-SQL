@@ -128,9 +128,7 @@ int main() {
     //进行词法分析
     vector<Token> tokens = LexicalAnalyze(dfa,SOURCE_PATH);
     cout<<"词法分析结果："<<endl;
-    for (vector<Token>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
-        cout << it->line << ": " << it->type <<" "<< it->value << endl; // 打印set中的值
-    }
+    printTokens(tokens);
     return 0;
 }
 

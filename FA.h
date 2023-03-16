@@ -60,6 +60,7 @@ set<string> readWordsFromFile(string path);
 template <typename T>
 void addVector(vector<T>& v1, vector<T>& v2);
 
+void printTokens(vector<Token> tokens);
 
 class FA{   //自动机M = (K, ∑, f, S, Z)
     Node startState;                   //初态集S

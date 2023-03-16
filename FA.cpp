@@ -30,7 +30,10 @@ void FA::GrammarToNFA(string path){
         return ;
     }
     //读取第一行存在line中
-    getline(file,line);
+    do {
+        getline(file,line);
+        trim(line);
+    }while(line[0] == '/' && line[1] == '/');
     int i = 0;
     while (i < line.length() && line[i] != ' ' && line[i] != '-')
         i++;
@@ -41,7 +44,7 @@ void FA::GrammarToNFA(string path){
     do{
         //去除前面的空格
         line = trim(line);
-        //跳过注释(暂时不能用)
+        //跳过注释(第一行不能用)
         if(line[0] == '/' && line[1] == '/'){
             line.clear();
             getline(file,line);
@@ -74,7 +77,8 @@ void FA::GrammarToNFA(string path){
         }
         //处理完成，清空字符串
         line.clear();
-    }while(getline(file,line)&&!line.empty());
+        getline(file,line);
+    }while(!line.empty());
     file.close();
 }
 
@@ -112,17 +116,17 @@ void FA::deal(string line){
         if (rs.empty()){
             string ss = "";
             //标识符和关键字
-            if (startsWith("AD",ls)){
-                ss = "A";
-            }else if (startsWith("E",ls)){
+            if (startsWith("I",ls)){
+                ss = "_I";
+            }else if (startsWith("O",ls)){
                 //运算符
-                ss = "E";
+                ss = "_O";
             }else if (startsWith("Separator",ls)){
                 //Separator
-                ss = "S";
+                ss = "_S";
             }else if (startsWith("A",ls) || startsWith("B",ls) || startsWith("C",ls) || startsWith("D",ls)){
                 //常量
-                ss = "C";
+                ss = "_C";
             }
             rs = "EndState_"+to_string(endState.size()+1) + ss;
             insertIntoEndState(rs);
@@ -135,17 +139,17 @@ void FA::deal(string line){
         if (rs.empty()){
             string ss = "";
             //标识符和关键字
-            if (startsWith("AD",ls)){
-                ss = "I";
-            }else if (startsWith("E",ls)){
+            if (startsWith("I",ls)){
+                ss = "_I";
+            }else if (startsWith("O",ls)){
                 //运算符
-                ss = "O";
+                ss = "_O";
             }else if (startsWith("Separator",ls)){
                 //Separator
-                ss = "S";
+                ss = "_S";
             }else if (startsWith("A",ls) || startsWith("B",ls) || startsWith("C",ls) || startsWith("D",ls)){
                 //常量
-                ss = "C";
+                ss = "_C";
             }
             rs = "EndState_"+to_string(endState.size()+1)+ss;
             insertIntoEndState(rs);
@@ -450,6 +454,44 @@ set<string> readWordsFromFile(string path) {
 template <typename T>
 void addVector(vector<T>& v1, vector<T>& v2) {
     v2.insert(v2.end(), v1.begin(), v1.end());
+}
+
+void printTokens(vector<Token> tokens) {
+    cout << left << setw(20) << "line";
+    cout << left << setw(20) << "Type";
+    cout << left << setw(20) << "value" << endl;
+    for (vector<Token>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+        cout << left << setw(20) << it->line << right;
+        switch (it->type) {
+            case 0:
+                cout << left << setw(20) << "KEYWORD";
+                break;
+            case 1:
+                cout << left << setw(20) << "IDENTIFIER";
+                break;
+            case 2:
+                cout << left << setw(20) << "CONSTANT";
+                break;
+            case 3:
+                cout << left << setw(20) << "DELIMITER";
+                break;
+            case 4:
+                cout << left << setw(20) << "OPERATOR";
+                break;
+            default:
+                cout << left << setw(20) << "unknown";
+        }
+        if (it->value == " "){
+            it->value = "'\\0'";
+        }
+        if (it->value == "  "){
+            it->value = "'\\t'";
+        }
+        if (it->value == "\n"){
+            it->value = "'\\n'";
+        }
+        cout << left << setw(20) << it->value << endl;
+    }
 }
 
 bool Token::operator<(const Token &o) const {
