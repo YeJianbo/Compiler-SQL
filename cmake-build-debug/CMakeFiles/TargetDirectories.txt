@@ -1,3 +1,3 @@
-E:/Code/JetBrain/CLion/LAXER/cmake-build-debug/CMakeFiles/LAXER.dir
-E:/Code/JetBrain/CLion/LAXER/cmake-build-debug/CMakeFiles/edit_cache.dir
-E:/Code/JetBrain/CLion/LAXER/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+E:/Code/JetBrain/CLion/Compiler/cmake-build-debug/CMakeFiles/Compiler.dir
+E:/Code/JetBrain/CLion/Compiler/cmake-build-debug/CMakeFiles/edit_cache.dir
+E:/Code/JetBrain/CLion/Compiler/cmake-build-debug/CMakeFiles/rebuild_cache.dir

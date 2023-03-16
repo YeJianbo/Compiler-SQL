@@ -3,9 +3,10 @@
 //
 #include <bits/stdc++.h>
 
-#define GRAMMAR_PATH "E:\\Code\\JetBrain\\CLion\\LAXER\\GRAMMAR.txt"
-#define SOURCE_PATH "E:\\Code\\JetBrain\\CLion\\LAXER\\SOURCE_CODE.txt"
-#define KEYWORD_PATH "E:\\Code\\JetBrain\\CLion\\LAXER\\KEYWORD.txt"
+#define GRAMMAR_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\GRAMMAR.txt"
+#define SOURCE_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\SOURCE_CODE.txt"
+#define KEYWORD_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\KEYWORD.txt"
+#define TOKEN_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\TOKEN.txt"
 
 
 using namespace std;
@@ -60,6 +61,8 @@ set<string> readWordsFromFile(string path);
 template <typename T>
 void addVector(vector<T>& v1, vector<T>& v2);
 
+void printTokens(vector<Token> tokens);
+
 
 class FA{   //自动机M = (K, ∑, f, S, Z)
     Node startState;                   //初态集S
@@ -110,3 +113,8 @@ public:
     set<Node> move(char input,set<Node> node,FA nfa);
 
 };
+
+
+vector<Token> LexicalAnalyze(FA dfa,string path);
+
+vector<Token> LAbyLine(FA dfa, string line, int n);

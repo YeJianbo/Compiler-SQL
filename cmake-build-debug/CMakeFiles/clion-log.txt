@@ -1,4 +1,4 @@
-"D:\JetBrains\CLion 2022.2\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=D:/JetBrains/CLion 2022.2/bin/ninja/win/ninja.exe" -G Ninja -S E:\Code\JetBrain\CLion\LAXER -B E:\Code\JetBrain\CLion\LAXER\cmake-build-debug
+"D:\JetBrains\CLion 2022.2\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=D:/JetBrains/CLion 2022.2/bin/ninja/win/ninja.exe" -G Ninja -S E:\Code\JetBrain\CLion\Compiler -B E:\Code\JetBrain\CLion\Compiler\cmake-build-debug
 -- Configuring done
 -- Generating done
--- Build files have been written to: E:/Code/JetBrain/CLion/LAXER/cmake-build-debug
+-- Build files have been written to: E:/Code/JetBrain/CLion/Compiler/cmake-build-debug

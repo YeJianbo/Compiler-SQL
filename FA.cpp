@@ -30,7 +30,10 @@ void FA::GrammarToNFA(string path){
         return ;
     }
     //读取第一行存在line中
-    getline(file,line);
+    do {
+        getline(file,line);
+        trim(line);
+    }while(line[0] == '/' && line[1] == '/');
     int i = 0;
     while (i < line.length() && line[i] != ' ' && line[i] != '-')
         i++;
@@ -41,7 +44,7 @@ void FA::GrammarToNFA(string path){
     do{
         //去除前面的空格
         line = trim(line);
-        //跳过注释(暂时不能用)
+        //跳过注释(第一行不能用)
         if(line[0] == '/' && line[1] == '/'){
             line.clear();
             getline(file,line);
@@ -74,7 +77,8 @@ void FA::GrammarToNFA(string path){
         }
         //处理完成，清空字符串
         line.clear();
-    }while(getline(file,line)&&!line.empty());
+        getline(file,line);
+    }while(!line.empty());
     file.close();
 }
 
@@ -112,17 +116,17 @@ void FA::deal(string line){
         if (rs.empty()){
             string ss = "";
             //标识符和关键字
-            if (startsWith("AD",ls)){
-                ss = "A";
-            }else if (startsWith("E",ls)){
+            if (startsWith("I",ls)){
+                ss = "_I";
+            }else if (startsWith("O",ls)){
                 //运算符
-                ss = "E";
+                ss = "_O";
             }else if (startsWith("Separator",ls)){
                 //Separator
-                ss = "S";
+                ss = "_S";
             }else if (startsWith("A",ls) || startsWith("B",ls) || startsWith("C",ls) || startsWith("D",ls)){
                 //常量
-                ss = "C";
+                ss = "_C";
             }
             rs = "EndState_"+to_string(endState.size()+1) + ss;
             insertIntoEndState(rs);
@@ -135,17 +139,17 @@ void FA::deal(string line){
         if (rs.empty()){
             string ss = "";
             //标识符和关键字
-            if (startsWith("AD",ls)){
-                ss = "I";
-            }else if (startsWith("E",ls)){
+            if (startsWith("I",ls)){
+                ss = "_I";
+            }else if (startsWith("O",ls)){
                 //运算符
-                ss = "O";
+                ss = "_O";
             }else if (startsWith("Separator",ls)){
                 //Separator
-                ss = "S";
+                ss = "_S";
             }else if (startsWith("A",ls) || startsWith("B",ls) || startsWith("C",ls) || startsWith("D",ls)){
                 //常量
-                ss = "C";
+                ss = "_C";
             }
             rs = "EndState_"+to_string(endState.size()+1)+ss;
             insertIntoEndState(rs);
@@ -452,6 +456,149 @@ void addVector(vector<T>& v1, vector<T>& v2) {
     v2.insert(v2.end(), v1.begin(), v1.end());
 }
 
+void printTokens(vector<Token> tokens) {
+    ofstream  out(TOKEN_PATH);
+    if (!out.is_open()){
+        cout<<"打开Token文件失败！"<<endl;
+        return;
+    }
+    cout << left << setw(20) << "line";
+    cout << left << setw(20) << "Type";
+    cout << left << setw(20) << "value" << endl;
+    for (vector<Token>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+        cout << left << setw(20) << it->line << right;
+        out << it->line <<"\t";
+        switch (it->type) {
+            case 0:
+                cout << left << setw(20) << "KEYWORD";
+                out << "KEYWORD\t";
+                break;
+            case 1:
+                cout << left << setw(20) << "IDENTIFIER";
+                out << "IDENTIFIER\t";
+                break;
+            case 2:
+                cout << left << setw(20) << "CONSTANT";
+                out << "CONSTANT\t";
+                break;
+            case 3:
+                cout << left << setw(20) << "DELIMITER";
+                out << "DELIMITER\t";
+                break;
+            case 4:
+                cout << left << setw(20) << "OPERATOR";
+                out << "OPERATOR\t";
+                break;
+            default:
+                cout << left << setw(20) << "unknown";
+                out << "unknown\t";
+        }
+        if (it->value == " "){
+            it->value = "\\0";
+        }
+        if (it->value == "  "){
+            it->value = "\\t";
+        }
+        if (it->value == "\n"){
+            it->value = "\\n";
+        }
+        cout << left << setw(20) << it->value << endl;
+        out << it->value << "\n";
+    }
+    out.close();
+}
+
 bool Token::operator<(const Token &o) const {
     return value.compare(o.value);
+}
+
+//单行词法分析
+vector<Token> LAbyLine(FA dfa, string line, int n) {
+    vector<Token> t;
+    string l = trim(line);
+    //缓冲区，保存输入的字符
+    string buf = "";
+    //当前状态为初态
+    Node state = dfa.getStartState();
+    map<Node,map<char,Node>> transDFA = dfa.getTransDfa();
+    set<Node> e = dfa.getEndState();
+    int i = 0;
+    //遍历行
+    while ( i < l.length() ){
+//        if (l[i] == ' '){
+//            if (++i < l.length()){
+//                continue;
+//            }
+//            break;
+//        }
+        state = transDFA[state][l[i]];
+        if (state.id == 0){
+            cout<<"程序错误！在第 "<< n <<" 行"<<endl;
+        }
+        buf += l[i];
+        //如果终态集中找不到state，说明不是终态
+        //此时必须继续读取下一个字符
+        if(e.find(state) == e.end()){
+            i++;
+            continue;
+        }else{
+            //包含终态，看下一个字符能否被接受，如果不能被接收，创建Token，读取下一个词
+            if(transDFA[state][l[i+1]].id == 0){
+                Token token;
+                if (isNodeNameEndsWith(state, "I")) {
+                    //标识符和关键字，遍历关键字集合，判断是否是关键字
+                    set<string> keyword = readWordsFromFile(KEYWORD_PATH);
+                    //是关键字
+                    if (keyword.find(buf) != keyword.end()) {
+                        token.type = KEYWORD;
+                    } else
+                        token.type = IDENTIFIER;
+                } else if (isNodeNameEndsWith(state, "O")) {
+                    token.type = OPERATOR;
+                } else if (isNodeNameEndsWith(state, "S")) {
+                    token.type = DELIMITER;
+                } else if (isNodeNameEndsWith(state, "C")) {
+                    token.type = CONSTANT;
+                }
+                //到达接受态,词语被接受，存入Token
+//            token.type = ;
+                token.line = n;
+                token.value = buf;
+                buf.clear();
+                t.push_back(token);
+                i++;
+                state = dfa.getStartState();
+                if (i < l.length())
+                    continue;
+                break;
+            }
+            else{
+                //下一个input能被接受
+                i++;
+                continue;
+            }
+        }
+    }
+    return t;
+}
+
+//词法分析
+//传入dfa与文件路径，对其进行词法分析，切分得到Token集
+vector<Token> LexicalAnalyze(FA dfa, string path) {
+    vector<Token> tokens;
+    string line;
+    int n = 0;
+    ifstream file(path);
+    if (!file){
+        cout << "找不到源代码文件！" << endl;
+        return tokens;
+    }
+    //从file中获取一行，保存在line中
+    while(getline(file,line)){
+        n++;
+        vector<Token> to = LAbyLine(dfa, line, n);
+        tokens.insert(tokens.end(),to.begin(),to.end());
+    }
+    file.close();
+    return tokens;
 }

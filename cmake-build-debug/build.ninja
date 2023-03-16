@@ -11,7 +11,7 @@
 # =============================================================================
 
 # =============================================================================
-# Project: LAXER
+# Project: Compiler
 # Configurations: Debug
 # =============================================================================
 
@@ -39,52 +39,52 @@ include CMakeFiles/rules.ninja
 #############################################
 # Logical path to working directory; prefix for absolute paths.
 
-cmake_ninja_workdir = E$:/Code/JetBrain/CLion/LAXER/cmake-build-debug/
+cmake_ninja_workdir = E$:/Code/JetBrain/CLion/Compiler/cmake-build-debug/
 # =============================================================================
-# Object build statements for EXECUTABLE target LAXER
+# Object build statements for EXECUTABLE target Compiler
 
 
 #############################################
-# Order-only phony target for LAXER
+# Order-only phony target for Compiler
 
-build cmake_object_order_depends_target_LAXER: phony || CMakeFiles/LAXER.dir
+build cmake_object_order_depends_target_Compiler: phony || CMakeFiles/Compiler.dir
 
-build CMakeFiles/LAXER.dir/main.cpp.obj: CXX_COMPILER__LAXER_Debug E$:/Code/JetBrain/CLion/LAXER/main.cpp || cmake_object_order_depends_target_LAXER
-  DEP_FILE = CMakeFiles\LAXER.dir\main.cpp.obj.d
+build CMakeFiles/Compiler.dir/main.cpp.obj: CXX_COMPILER__Compiler_Debug E$:/Code/JetBrain/CLion/Compiler/main.cpp || cmake_object_order_depends_target_Compiler
+  DEP_FILE = CMakeFiles\Compiler.dir\main.cpp.obj.d
   FLAGS = -g -std=gnu++14
-  OBJECT_DIR = CMakeFiles\LAXER.dir
-  OBJECT_FILE_DIR = CMakeFiles\LAXER.dir
+  OBJECT_DIR = CMakeFiles\Compiler.dir
+  OBJECT_FILE_DIR = CMakeFiles\Compiler.dir
 
-build CMakeFiles/LAXER.dir/FA.cpp.obj: CXX_COMPILER__LAXER_Debug E$:/Code/JetBrain/CLion/LAXER/FA.cpp || cmake_object_order_depends_target_LAXER
-  DEP_FILE = CMakeFiles\LAXER.dir\FA.cpp.obj.d
+build CMakeFiles/Compiler.dir/FA.cpp.obj: CXX_COMPILER__Compiler_Debug E$:/Code/JetBrain/CLion/Compiler/FA.cpp || cmake_object_order_depends_target_Compiler
+  DEP_FILE = CMakeFiles\Compiler.dir\FA.cpp.obj.d
   FLAGS = -g -std=gnu++14
-  OBJECT_DIR = CMakeFiles\LAXER.dir
-  OBJECT_FILE_DIR = CMakeFiles\LAXER.dir
+  OBJECT_DIR = CMakeFiles\Compiler.dir
+  OBJECT_FILE_DIR = CMakeFiles\Compiler.dir
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target LAXER
+# Link build statements for EXECUTABLE target Compiler
 
 
 #############################################
-# Link the executable LAXER.exe
+# Link the executable Compiler.exe
 
-build LAXER.exe: CXX_EXECUTABLE_LINKER__LAXER_Debug CMakeFiles/LAXER.dir/main.cpp.obj CMakeFiles/LAXER.dir/FA.cpp.obj
+build Compiler.exe: CXX_EXECUTABLE_LINKER__Compiler_Debug CMakeFiles/Compiler.dir/main.cpp.obj CMakeFiles/Compiler.dir/FA.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
-  OBJECT_DIR = CMakeFiles\LAXER.dir
+  OBJECT_DIR = CMakeFiles\Compiler.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
-  TARGET_FILE = LAXER.exe
-  TARGET_IMPLIB = libLAXER.dll.a
-  TARGET_PDB = LAXER.exe.dbg
+  TARGET_FILE = Compiler.exe
+  TARGET_IMPLIB = libCompiler.dll.a
+  TARGET_PDB = Compiler.exe.dbg
 
 
 #############################################
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D E:\Code\JetBrain\CLion\LAXER\cmake-build-debug && "D:\JetBrains\CLion 2022.2\bin\cmake\win\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D E:\Code\JetBrain\CLion\Compiler\cmake-build-debug && "D:\JetBrains\CLion 2022.2\bin\cmake\win\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -95,7 +95,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D E:\Code\JetBrain\CLion\LAXER\cmake-build-debug && "D:\JetBrains\CLion 2022.2\bin\cmake\win\bin\cmake.exe" --regenerate-during-build -SE:\Code\JetBrain\CLion\LAXER -BE:\Code\JetBrain\CLion\LAXER\cmake-build-debug"
+  COMMAND = cmd.exe /C "cd /D E:\Code\JetBrain\CLion\Compiler\cmake-build-debug && "D:\JetBrains\CLion 2022.2\bin\cmake\win\bin\cmake.exe" --regenerate-during-build -SE:\Code\JetBrain\CLion\Compiler -BE:\Code\JetBrain\CLion\Compiler\cmake-build-debug"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -105,7 +105,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build LAXER: phony LAXER.exe
+build Compiler: phony Compiler.exe
 
 # =============================================================================
 # Folder targets.
@@ -113,9 +113,9 @@ build LAXER: phony LAXER.exe
 # =============================================================================
 
 #############################################
-# Folder: E:/Code/JetBrain/CLion/LAXER/cmake-build-debug
+# Folder: E:/Code/JetBrain/CLion/Compiler/cmake-build-debug
 
-build all: phony LAXER.exe
+build all: phony Compiler.exe
 
 # =============================================================================
 # Built-in targets
