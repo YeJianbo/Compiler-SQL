@@ -3,4 +3,4 @@ project(Compiler)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Compiler main.cpp FA.cpp FA.h)
+add_executable(Compiler main.cpp FA.cpp FA.h LR.cpp LR.h)

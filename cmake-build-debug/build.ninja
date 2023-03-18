@@ -61,6 +61,12 @@ build CMakeFiles/Compiler.dir/FA.cpp.obj: CXX_COMPILER__Compiler_Debug E$:/Code/
   OBJECT_DIR = CMakeFiles\Compiler.dir
   OBJECT_FILE_DIR = CMakeFiles\Compiler.dir
 
+build CMakeFiles/Compiler.dir/LR.cpp.obj: CXX_COMPILER__Compiler_Debug E$:/Code/JetBrain/CLion/Compiler/LR.cpp || cmake_object_order_depends_target_Compiler
+  DEP_FILE = CMakeFiles\Compiler.dir\LR.cpp.obj.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles\Compiler.dir
+  OBJECT_FILE_DIR = CMakeFiles\Compiler.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Compiler
@@ -69,7 +75,7 @@ build CMakeFiles/Compiler.dir/FA.cpp.obj: CXX_COMPILER__Compiler_Debug E$:/Code/
 #############################################
 # Link the executable Compiler.exe
 
-build Compiler.exe: CXX_EXECUTABLE_LINKER__Compiler_Debug CMakeFiles/Compiler.dir/main.cpp.obj CMakeFiles/Compiler.dir/FA.cpp.obj
+build Compiler.exe: CXX_EXECUTABLE_LINKER__Compiler_Debug CMakeFiles/Compiler.dir/main.cpp.obj CMakeFiles/Compiler.dir/FA.cpp.obj CMakeFiles/Compiler.dir/LR.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Compiler.dir

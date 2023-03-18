@@ -32,7 +32,7 @@ void FA::GrammarToNFA(string path){
     //读取第一行存在line中
     do {
         getline(file,line);
-        trim(line);
+        line = trim(line);
     }while(line[0] == '/' && line[1] == '/');
     int i = 0;
     while (i < line.length() && line[i] != ' ' && line[i] != '-')
@@ -346,7 +346,6 @@ set<Node> FA::closure(const Node& node) {
     return result;
 }
 
-
 const set<char> &FA::getCharSet() const {
     return charSet;
 }
@@ -366,7 +365,6 @@ const set<Node> &FA::getEndState() const {
 const Node &FA::getStartState() const {
     return startState;
 }
-
 
 string trim(string str) {
     size_t first = str.find_first_not_of(' ');
@@ -413,7 +411,6 @@ bool Node::operator<(const Node &o) const {
 bool Node::operator==(const Node &o) const {
     return id == o.id;
 }
-
 
 bool startsWith(const string &prefix, const string &str) {
     if (str.size() < prefix.size()) {
