@@ -51,8 +51,8 @@ struct ItemSet{
 
 /*语法分析 步骤
  * 读取上下文无关文法（文件给出），保存产生式，增广产生式，计算LR(1)项集族，
- * 通过项集族推导出LR(1)自动机，根据自动机，得到ACTION表及GOTO表，
- * 根据得到的状态对输入的Token表进行语法分析，得到分析结果*/
+ * 通过项集族构造LR(1)自动机，根据自动机得到ACTION表及GOTO表，
+ * 根据得到的LR(1)分析表对输入的Token表进行语法分析，得到分析结果*/
 
 class LR {
 private:
@@ -64,10 +64,10 @@ private:
     vector<Production> Productions;
     //DFA对应关系，一个Node，输入一个Symbol1，展望符为Symbol2到达新状态
     map<Node,map<char,map<char,Node>>> transDFA;
-    //ACTION表，Node输入一个Vn，到达一个新的Node，此时需要归约，bool取true，移进取false
-    map<Node,map<char,pair<Node,bool>>> Action;
-    //GOTO表，Node输入Vt，到达新Node，此时为待约项
-    map<Node,map<char,Node>> Goto;
+    //ACTION表，项集（状态）输入一个Vn（小写字母），到达一个新的ItemSet，此时需要归约，bool取true，移进取false
+    map<ItemSet,map<char,pair<ItemSet,bool>>> Action;
+    //GOTO表，itemSet输入Vt，到达新项集，此时为待约项
+    map<ItemSet,map<char,ItemSet>> Goto;
 
     map<char, set<char>> first_set;
 

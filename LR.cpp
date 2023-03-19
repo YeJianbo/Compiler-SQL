@@ -306,30 +306,41 @@ set<ItemSet> LR::construct_LR1_itemsets() {
         map<char,ItemSet> itemMap;
         //遍历项集中的每一个项，取点后的第一个字符
         for (const auto& item : itemset.items){
-            charSet.insert(item.rule.r[item.dot]);
             auto item1 = item;
             //如果点不在最后，为移进/待约项目，点后移
             if (item.dot < item.rule.r.length()){
+                charSet.insert(item.rule.r[item.dot]);
                 item1.dot++;
                 itemMap[item.rule.r[item.dot]].items.insert(item1);
             }else{
-                //点在最后，归约
-
+                //点在最后，归约，新增Action表，第二个ItemSet中有一个产生式（表示使用这条产生式归约）
+                for (const auto &l: item.lookahead){
+                    ItemSet iss;
+                    Item ii;
+                    Production p = item.rule;
+                    ii.rule = p;
+                    iss.items.insert(ii);
+                    //对于Z -> S.，状态为acc
+                    if (p.l == 'Z' && p.r == "S"){
+                        iss.name = "ACC";
+                    }
+                    Action[itemset][l] = {iss, true};
+                }
             }
-
         }
         //遍历所有可输入项，对于每个可输入项，在项集中寻找项的表达式，组成一个项集，将其求闭包，闭包结果新建状态
         for (auto& c:charSet) {
             cout<<c<<"|";
             ItemSet iss = itemMap[c];
-            //求完闭包后，得到新状态，新状态如果不存在，那么新增
+            //求完闭包后，得到新状态，新状态如果不存在，那么新增，得到状态后（无论是否新增），添加关系转移表
             closure(iss);
+            //标记flag，值不变说明没有找到已有项集，此时新建一个项集
             int flag = 0;
-            //找不到该状态，需要新增状态
             for (auto& i:itemsets) {
-                //i == iss，说明找到了完全一致的itemset，不新增状态
+                //i == iss，说明找到了完全一致的itemset，不需要新增状态
                 if (i == iss){
                     flag = 1;
+                    iss.name = i.name;
                     break;
                 }
             }
@@ -338,6 +349,14 @@ set<ItemSet> LR::construct_LR1_itemsets() {
                 iss.name = "I" + to_string(itemsets.size());
                 itemset_queue.push(iss);
                 itemsets.insert(iss);
+            }
+            //将状态转移结果加入ACTION/GOTO表
+            //对于大写字母（非终结符），将状态转移加入GOTO表
+            if (isupper(c)){
+                Goto[itemset][c] = iss;
+            }else{
+                //对于非终结符，状态加入Action，为移进状态
+                Action[itemset][c] = {iss, false};
             }
         }
 //        for (const auto& item : itemset.items) {
@@ -429,18 +448,41 @@ ItemSet LR::closure(ItemSet& items) {
     return items;
 }
 
+//输出项集族与状态转移
 void LR::printItemSet() {
     cout<<endl;
     for (const auto& i:is) {
         cout<<i.name<<": "<<endl;
         for (const auto& item : i.items){
-            cout<<item.rule.l<<" -> "<<item.rule.r<<" dot: "<<item.dot<<" lookahead: {";
+            auto ii = item;
+            ii.rule.r.insert(item.dot,".");
+            cout<<item.rule.l<<" -> "<<ii.rule.r<<", lookahead: {";
             for(const auto& l:item.lookahead){
                 cout<<l<<" ";
             }
             cout<<"}"<<endl;
         }
+        nonTerminals.insert('$');
+        //遍历ACTION及GOTO表，输出该项集出的状态转移
+        for (const auto &c: nonTerminals){
+            auto a = Action[i][c];
+            if (!a.first.name.empty()){
+                cout<<"--"<< c << "-->" << a.first.name<<"\t";
+            } else {
+                Production pp = a.first.items.begin()->rule;
+                if (pp.l != '\0')
+                    cout<<"--"<< c << "--> {" << pp.l << " -> "<<pp.r<<"}\t";
+            }
+        }
+        for (const auto &c: terminals){
+            auto g = Goto[i][c];
+            if (!g.name.empty()){
+                cout<<"--"<< c << "-->" << g.name<<"\t";
+            }
+        }
+        cout<<endl;
     }
+    cout<<endl;
 }
 
 void LR::printProduction() {

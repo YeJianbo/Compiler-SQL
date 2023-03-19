@@ -1,3 +1,2 @@
 S -> BB
-B -> aB
-B -> b
+B -> aB | b
