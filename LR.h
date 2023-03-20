@@ -3,6 +3,7 @@
 //
 #include "FA.h"
 #define GRAMMAR_2NF_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\GRAMMAR_2NF.txt"
+#define MATCH_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\MATCH.txt"
 
 //struct Symbol {
 ////    int id;
@@ -71,32 +72,44 @@ private:
 
     map<char, set<char>> first_set;
 
-
-
-public:
     set<ItemSet> is;
+
+    vector<Token> tokens;
+
+    stack<char> tokenString;
+
+    map<string,char> dic;
+public:
+
     //从path中读取上下文无关文法，保存到产生式集合中，并将该集合返回
     vector<Production> readGrammar(string path);
 
     //对文法进行增广（添加一个新的符号，以便起始状态仅在产生式左边出现一次）
     void augmentGrammar(vector<Production>& grammar);
 
-    //计算LR(1)项集族
-    void computeItemSets(vector<Production>& grammar);
+    //计算LR(1)项集族，并生成LR(1)自动机
+    set<ItemSet> construct_LR1_itemsets();
 
     //计算项集族闭包
     ItemSet closure(ItemSet &productions);
 
-    //生成LR(1)自动机
-    void automaton();
-
-    set<ItemSet> construct_LR1_itemsets();
-
+    //输出项集族以及状态转移关系
     void printItemSet();
 
+    //输出读入的产生式
     void printProduction();
 
-    void calculateFirstSet();
+    //语法分析
+    //path:Token文件的路径
+    void parse(string path);
+
+    void printToken();
+
+    string readToken(string path);
+
+    string tokenToString();
+
+    void readDic(string path);
 };
 
 

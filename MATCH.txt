@@ -1,0 +1,28 @@
+begin b
+const c
+//Constant -> d(常量)
+else e
+do f
+//数据类型用g表示
+bool g
+char g
+int g
+double g
+float g
+complex g
+end h
+if i
+//其他Keyword -> k
+//Identifier -> t (标识符用t表示)
+* m
+/ m
++ p
+- p
+== r
+<= r
+< r
+> r
+>= r
+!= r
+then v
+while w

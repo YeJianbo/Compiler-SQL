@@ -1,8 +1,5 @@
-{
-  int i = 2952;
+  int i=2952;
   float a = 89.64;
   float b = 1.145e+14;
   complex d = 89+64i;
   double c = a + b;
-  return 0;
-}

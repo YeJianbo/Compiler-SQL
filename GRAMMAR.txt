@@ -1,10 +1,10 @@
 Start -> Identifier | Constant | Separator | Operator
 //
 Identifier -> aI | bI | cI | dI | eI | fI | gI | hI | iI | jI | kI | lI | mI | nI | oI | pI | qI | rI | sI | tI | uI | vI | wI | xI | yI | zI | _I
-I -> $ | aI | bI | cI | dII | eI | fI | gI | hI | iI | jI | kI | lI | mI | nI | oI | pI | qI | rI | sI | tI | uI | vI | wI | xI | yI | zI | _I | 0I | 1I | 2I | 3I | 4I | 5I | 6I | 7I | 8I | 9I
+I -> $ | aI | bI | cI | dI | eI | fI | gI | hI | iI | jI | kI | lI | mI | nI | oI | pI | qI | rI | sI | tI | uI | vI | wI | xI | yI | zI | _I | 0I | 1I | 2I | 3I | 4I | 5I | 6I | 7I | 8I | 9I
 Constant -> A | B | C | D
 A -> +A0 | -A0 | A0 | 0
-A0 -> 1A1 | 2A1 | 3A1 | 4A1 | 5A1 6A1 | 7A1 | 8A1 | 9A1
+A0 -> 1A1 | 2A1 | 3A1 | 4A1 | 5A1 | 6A1 | 7A1 | 8A1 | 9A1
 A1 -> $ | 0A1 | 1A1 | 2A1 | 3A1 | 4A1 | 5A1 | 6A1 | 7A1 | 8A1 | 9A1
 B -> 0B3 | 1B1 | 2B1 | 3B1 | 4B1 | 5B1 |6B1 | 7B1 | 8B1 | 9B1
 B1 -> .B2 | 1B1 | 2B1 | 3B1 | 4B1 | 5B1 |6B1 | 7B1 | 8B1 | 9B1 | 0B1

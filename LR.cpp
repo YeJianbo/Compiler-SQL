@@ -4,18 +4,6 @@
 
 #include "LR.h"
 
-//bool Symbol::operator<(const Symbol &o) const {
-//    return value.compare(o.value);
-//}
-//
-//bool Symbol::operator==(const Symbol &o) const {
-//    return value == o.value && is_terminal == o.is_terminal;
-//}
-//
-//bool Symbol::operator!=(const Symbol &o) const {
-//    return !(*this == o);
-//}
-
 void addAllElement(set<char> &destSet, const set<char> &sourceSet) {
     for (const auto& element : sourceSet)
     {
@@ -41,7 +29,8 @@ bool Item::operator==(const Item &o) const {
 bool Item::operator<(const Item &o) const {
     if (rule == o.rule){
         if (dot == o.dot){
-            //æ­¤å¤„ä»£ç æœ‰é—®é¢˜ï¼ï¼ï¼èƒ½è·‘ï¼Œä»¥åä¿®
+            //Èç¹ûµãµÄÎ»ÖÃÏàÍ¬£¬ĞèÒª¸ù¾İlookahead²»Í¬À´Çø·Ö
+            //×¢Òâ£º´Ë´¦´úÂë¿ÉÄÜÓĞÎÊÌâ£¡£¡£¡ÄÜÅÜ£¬ÒÔºóĞŞ
             return lookahead < o.lookahead;
         }
         return dot < o.dot;
@@ -57,12 +46,49 @@ bool ItemSet::operator<(const ItemSet &o) const {
     return stoi(name.substr(1, name.size())) < stoi(o.name.substr(1, o.name.size()));
 }
 
+void LR::printToken() {
+    cout << left << setw(20) << "line";
+    cout << left << setw(20) << "Type";
+    cout << left << setw(20) << "value" << endl;
+    for (vector<Token>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+        cout << left << setw(20) << it->line << right;
+        switch (it->type) {
+            case 0:
+                cout << left << setw(20) << "KEYWORD";
+                break;
+            case 1:
+                cout << left << setw(20) << "IDENTIFIER";
+                break;
+            case 2:
+                cout << left << setw(20) << "CONSTANT";
+                break;
+            case 3:
+                cout << left << setw(20) << "DELIMITER";
+                break;
+            case 4:
+                cout << left << setw(20) << "OPERATOR";
+                break;
+            default:
+                cout << left << setw(20) << "unknown";
+        }
+        if (it->value == " "){
+            it->value = "\\0";
+        }
+        if (it->value == "  "){
+            it->value = "\\t";
+        }
+        if (it->value == "\n"){
+            it->value = "\\n";
+        }
+        cout << left << setw(20) << it->value << endl;
+    }
+}
 
-//è®¡ç®—å­—ç¬¦ä¸²çš„firsté›†
+//¼ÆËã×Ö·û´®µÄfirst¼¯
 set<char> calc_first_s(string &s, map<char, set<char>> &first_set, vector<Production> &prods) {
     set<char> first;
     set<char> visited;
-    //å¦‚æœsçš„ç¬¬ä¸€ä¸ªç¬¦å·æ˜¯ç»ˆç»“ç¬¦(å°å†™å­—æ¯)ï¼Œç›´æ¥å°†å…¶åŠ å…¥FIRSTé›†åˆä¸­
+    //Èç¹ûsµÄµÚÒ»¸ö·ûºÅÊÇÖÕ½á·û(Ğ¡Ğ´×ÖÄ¸)£¬Ö±½Ó½«Æä¼ÓÈëFIRST¼¯ºÏÖĞ
     if (!isupper(s[0]) || s[0] == '$') {
         if (s[0] != '$') {
             first.insert(s[0]);
@@ -71,7 +97,7 @@ set<char> calc_first_s(string &s, map<char, set<char>> &first_set, vector<Produc
             first.insert('$');
         }
     }
-    //å¦åˆ™ï¼Œè®¡ç®—ç¬¬ä¸€ä¸ªç¬¦å·çš„FIRSTé›†åˆ
+    //·ñÔò£¬¼ÆËãµÚÒ»¸ö·ûºÅµÄFIRST¼¯ºÏ
     else {
         auto tmp_set = calc_first(s[0], first_set, visited, prods);
         first.insert(tmp_set.begin(), tmp_set.end());
@@ -90,22 +116,22 @@ set<char> calc_first_s(string &s, map<char, set<char>> &first_set, vector<Produc
     return first;
 }
 
-//è®¡ç®—å•ä¸ªå­—ç¬¦çš„FIRSTé›†
+//¼ÆËãµ¥¸ö×Ö·ûµÄFIRST¼¯
 set<char> calc_first(const char s, map<char, set<char>> &first_set, set<char> &visited, vector<Production> &prods) {
     set<char> first;
-    //å¦‚æœså·²ç»è¢«è®¿é—®è¿‡ï¼Œè¯´æ˜è¯¥ç¬¦å·çš„FIRSTé›†åˆå·²ç»è®¡ç®—è¿‡ï¼Œç›´æ¥è¿”å›
+    //Èç¹ûsÒÑ¾­±»·ÃÎÊ¹ı£¬ËµÃ÷¸Ã·ûºÅµÄFIRST¼¯ºÏÒÑ¾­¼ÆËã¹ı£¬Ö±½Ó·µ»Ø
     if (visited.find(s) != visited.end()) {
         return first_set[s];
     }
-    //å¦‚æœsæ˜¯ç»ˆç»“ç¬¦ï¼Œç›´æ¥å°†å…¶åŠ å…¥FIRSTé›†åˆä¸­
+    //Èç¹ûsÊÇÖÕ½á·û£¬Ö±½Ó½«Æä¼ÓÈëFIRST¼¯ºÏÖĞ
     if (!isupper(s) || s == '$') {
         first.insert(s);
     }
-        //å¦åˆ™ï¼Œéå†äº§ç”Ÿå¼é›†åˆï¼Œæ‰¾åˆ°æ‰€æœ‰ä»¥sä¸ºå·¦éƒ¨çš„äº§ç”Ÿå¼ï¼Œå¹¶è®¡ç®—å…¶å³éƒ¨ç¬¦å·çš„FIRSTé›†åˆ
+        //·ñÔò£¬±éÀú²úÉúÊ½¼¯ºÏ£¬ÕÒµ½ËùÓĞÒÔsÎª×ó²¿µÄ²úÉúÊ½£¬²¢¼ÆËãÆäÓÒ²¿·ûºÅµÄFIRST¼¯ºÏ
     else {
         for (auto& p : prods) {
             if (p.l == s) {
-                //å¦‚æœå³éƒ¨ç¬¬ä¸€ä¸ªç¬¦å·ä¸ºsï¼Œåˆ™éœ€è¦å°†å…¶FIRSTé›†åˆä¸­é™¤äº†ç©ºä¸²çš„ç¬¦å·åŠ å…¥å½“å‰ç¬¦å·çš„FIRSTé›†åˆä¸­
+                //Èç¹ûÓÒ²¿µÚÒ»¸ö·ûºÅÎªs£¬ÔòĞèÒª½«ÆäFIRST¼¯ºÏÖĞ³ıÁË¿Õ´®µÄ·ûºÅ¼ÓÈëµ±Ç°·ûºÅµÄFIRST¼¯ºÏÖĞ
                 if (!isupper(p.r[0]) || p.r[0] == '$') {
                     if (p.r[0] != '$') {
                         first.insert(p.r[0]);
@@ -137,23 +163,23 @@ set<char> calc_first(const char s, map<char, set<char>> &first_set, set<char> &v
     return first;
 }
 
-//è¯»å–äºŒå‹æ–‡æ³•ï¼Œè§„å®šè¯¥äºŒå‹æ–‡æ³•çš„VNä¸VTå‡ä¸ºå•ä¸ªå­—ç¬¦ï¼Œä¿å­˜åœ¨productionsä¸­
+//¶ÁÈ¡¶şĞÍÎÄ·¨£¬¹æ¶¨¸Ã¶şĞÍÎÄ·¨µÄVNÓëVT¾ùÎªµ¥¸ö×Ö·û£¬±£´æÔÚproductionsÖĞ
 vector<Production> LR::readGrammar(string path) {
     ifstream file(path);
     vector<Production> productions;
     string line;
-    //æ‰“å¼€æ–‡ä»¶
+    //´ò¿ªÎÄ¼ş
     if (!file){
-        cout<<"æ‰¾ä¸åˆ°å…³é”®å­—æ–‡ä»¶ï¼"<<endl;
+        cout<<"ÕÒ²»µ½¹Ø¼ü×ÖÎÄ¼ş£¡"<<endl;
         return productions;
     }
-    // æ€è·¯ï¼šè·å–ä¸€è¡Œï¼Œåˆ‡å‰²ä¸¤è¾¹ï¼Œå¦‚æœå³è¾¹æœ‰"|"ï¼Œå†åˆ‡å‰²å³è¾¹ï¼Œ
-    // é€ä¸ªæ”¾å…¥productionsä¸­
+    // Ë¼Â·£º»ñÈ¡Ò»ĞĞ£¬ÇĞ¸îÁ½±ß£¬Èç¹ûÓÒ±ßÓĞ"|"£¬ÔÙÇĞ¸îÓÒ±ß£¬
+    // Öğ¸ö·ÅÈëproductionsÖĞ
     getline(file,line);
     while(!line.empty()){
-        //è·å–åˆ°ä¸€è¡Œ
+        //»ñÈ¡µ½Ò»ĞĞ
         line = trim(line);
-        //è·³è¿‡æ³¨é‡Š
+        //Ìø¹ı×¢ÊÍ
         if (line[0] == '/' && line[1] == '/'){
             line.clear();
             getline(file,line);
@@ -162,19 +188,19 @@ vector<Production> LR::readGrammar(string path) {
         }
         size_t p = line.find("->");
         if (p == string::npos){
-            cout << "è¾“å…¥çš„è¯­æ³•æœ‰è¯¯ï¼"<<endl;
+            cout << "ÊäÈëµÄÓï·¨ÓĞÎó£¡"<<endl;
             return vector<Production>();
         }
         string h = trim(line.substr(0,p));
         line = trim(line.substr(p + 2));
-        //å¾—åˆ°å•æ¡äº§ç”Ÿå¼
+        //µÃµ½µ¥Ìõ²úÉúÊ½
         if (line.find('|') == string::npos){
             Production production;
 //            vector<Symbol> sy;
-            //å¾—åˆ°äº†å·¦è¾¹hï¼Œå³è¾¹line
+            //µÃµ½ÁË×ó±ßh£¬ÓÒ±ßline
                 production.r += line;
             if (!isupper(h[0])){
-                cout << "æ‚¨è¾“å…¥çš„è¯­æ³•æœ‰è¯¯ï¼"<<endl;
+                cout << "ÄúÊäÈëµÄÓï·¨ÓĞÎó£¡"<<endl;
                 return vector<Production>();
             }
             for (auto& sss:production.r) {
@@ -190,11 +216,11 @@ vector<Production> LR::readGrammar(string path) {
             stringstream ss(line);
             string s;
             while(getline(ss,s,'|')){
-                //å¾—åˆ°hï¼ˆå·¦è¾¹ï¼‰ä¸trim(s)ï¼ˆå³è¾¹ï¼‰
+                //µÃµ½h£¨×ó±ß£©Óëtrim(s)£¨ÓÒ±ß£©
                 Production production;
                 production.r = trim(s);
                 if (!isupper(h[0])){
-                    cout << "æ‚¨è¾“å…¥çš„è¯­æ³•æœ‰è¯¯ï¼"<<endl;
+                    cout << "ÄúÊäÈëµÄÓï·¨ÓĞÎó£¡"<<endl;
                     return vector<Production>();
                 }
                 for (auto& sss:production.r) {
@@ -211,13 +237,13 @@ vector<Production> LR::readGrammar(string path) {
         line.clear();
         getline(file,line);
     }
-    //å¯¹å¾—åˆ°çš„æ–‡æ³•è¿›è¡Œå¢å¹¿
+    //¶ÔµÃµ½µÄÎÄ·¨½øĞĞÔö¹ã
     augmentGrammar(productions);
     Productions = productions;
     return productions;
 }
 
-//å¯¹æ–‡æ³•è¿›è¡Œå¢å¹¿å¤„ç†
+//¶ÔÎÄ·¨½øĞĞÔö¹ã´¦Àí
 void LR::augmentGrammar(vector<Production> &grammar) {
 //    vector<Production> productions;
     char start = 'Z';
@@ -226,208 +252,125 @@ void LR::augmentGrammar(vector<Production> &grammar) {
     grammar[0].l = start;
 }
 
-/*void LR::computeItemSets(vector<Production> &grammar) {
-    //å–å·²å¢å¹¿å¤„ç†è¿‡çš„æ–‡æ³•
-    vector<Production> g = grammar;
-    //åˆå§‹åŒ–åˆæ€
-    //é¡¹é›†
-    ItemSet is;
-    //é¡¹
-    Item start;
-    //é¡¹é›†æ—
-    vector<ItemSet> sets;
-    start.rule.l = '\'';
-    start.rule.r = "S";
-    start.dot = 0;
-    start.lookahead = {'$'};
-    is.items.insert(start);
-//    sets.push_back(is);
-    //å¾—åˆ°é—­åŒ…is
-    closure(is);
-    //éå†é—­åŒ…ä¸­çš„æ¯ä¸ªé¡¹é›†Iï¼Œå¯¹äºæ¯ä¸ªé¡¹ä¸­çš„æ¯ä¸ªæ–‡æ³•ç¬¦å·ï¼ŒGOTO(I, X)éç©ºä¸”ä¸åœ¨é—­åŒ…ä¸­ï¼Œåˆ™å°†GOTOåŠ å…¥é—­åŒ…
-    for (auto &i:is.items) {
-
-    }
-//    int i = 0;
-//
-//    while (i < sets.size()){
-//        for(const Item&item:sets[i].items){
-//            //ç‚¹åé¢æ˜¯VN(å°å†™å­—æ¯)
-//            if (item.dot_position < item.rule.r.size() && !item.rule.r[item.dot_position].is_terminal){
-//                set<Symbol> lookahead;
-//                if (item.dot_position + 1 < item.rule.r.size()){
-//                    vector<Symbol> sub(item.rule.r.begin()+item.dot_position+1,item.rule.r.end());
-//                    for (auto &s : sub) {
-//                        auto s_first = calc_first(s, first_set);
-//                        lookahead.insert(s_first.begin(), s_first.end());
-//                        if (!s_first.count(Symbol{""})) {
-//                            // å¦‚æœå½“å‰ç¬¦å·çš„FIRSTé›†åˆä¸åŒ…å«ç©ºä¸²ï¼Œåˆ™ä¸éœ€è¦è®¡ç®—åç»­ç¬¦å·çš„FIRSTé›†åˆ
-//                            break;
-//                        }
-//                    }
-//                } else{
-//                    lookahead = {item.lookahead};
-//                }
-//                Item new_item;
-//                new_item.rule.l = item.rule.l;
-//                new_item.rule.r = item.rule.r;
-//                swap(new_item.rule.r[item.dot_position],new_item.rule.r[item.dot_position+1]);
-//                new_item.lookahead;
-//            }
-//        }
-//    }
-}*/
-
-
-// ç”¨äºæ„é€ LR(1)åˆ†æçš„é¡¹é›†æ—
-// æ„é€ æ–¹æ³•ï¼šé¦–å…ˆè·å–åˆå§‹çŠ¶æ€çš„é¡¹é›†ï¼Œå¯¹è¯¥é¡¹é›†ä¾æ¬¡è¾“å…¥æ‰€æœ‰ç‚¹åçš„å­—ç¬¦ï¼Œè½¬ç§»åˆ°æ–°çŠ¶æ€ï¼Œ
-// å¯¹è¯¥æ–°çŠ¶æ€æ±‚é¡¹é›†æ—é—­åŒ…ï¼Œé—­åŒ…ç»“æœä¸ºè¯¥çŠ¶æ€æ‰€æœ‰é¡¹é›†ï¼Œä¾æ¬¡å¤„ç†ï¼Œç›´åˆ°æ²¡æœ‰é¡¹é›†æ–°å¢ï¼Œå¾—åˆ°é¡¹é›†æ—
+// ÓÃÓÚ¹¹ÔìLR(1)·ÖÎöµÄÏî¼¯×å
+// ¹¹Ôì·½·¨£ºÊ×ÏÈ»ñÈ¡³õÊ¼×´Ì¬µÄÏî¼¯£¬¶Ô¸ÃÏî¼¯ÒÀ´ÎÊäÈëËùÓĞµãºóµÄ×Ö·û£¬×ªÒÆµ½ĞÂ×´Ì¬£¬
+// ¶Ô¸ÃĞÂ×´Ì¬ÇóÏî¼¯×å±Õ°ü£¬±Õ°ü½á¹ûÎª¸Ã×´Ì¬ËùÓĞÏî¼¯£¬ÒÀ´Î´¦Àí£¬Ö±µ½Ã»ÓĞÏî¼¯ĞÂÔö£¬µÃµ½Ïî¼¯×å
 set<ItemSet> LR::construct_LR1_itemsets() {
-    // åˆå§‹é¡¹é›†ä¸ºZ -> .S, $
+    // ³õÊ¼Ïî¼¯ÎªZ -> .S, $
     ItemSet initial_itemset;
     initial_itemset.items.insert(Item{ Production{ 'Z', "S" }, 0, { '$' } });
-    // é¡¹é›†æ—
+    // Ïî¼¯×å
     set<ItemSet> itemsets;
     initial_itemset.name = "I" + to_string(itemsets.size());
     itemsets.insert(closure(initial_itemset));
-    // å¾…å¤„ç†é¡¹é›†é˜Ÿåˆ—
+    // ´ı´¦ÀíÏî¼¯¶ÓÁĞ
     queue<ItemSet> itemset_queue;
-    // å¤„ç†åˆå§‹çŠ¶æ€
+    // ´¦Àí³õÊ¼×´Ì¬
     itemset_queue.push(initial_itemset);
-    // éå†æ‰€æœ‰å¾…å¤„ç†çš„é¡¹é›†Iï¼Œå¯¹äºæ¯ä¸ªé¡¹ä¸­çš„æ¯ä¸ªæ–‡æ³•ç¬¦å·ï¼ŒGOTO(I, X)éç©ºä¸”ä¸åœ¨é—­åŒ…ä¸­ï¼Œåˆ™å°†GOTOåŠ å…¥é—­åŒ…
+    // ±éÀúËùÓĞ´ı´¦ÀíµÄÏî¼¯I£¬¶ÔÓÚÃ¿¸öÏîÖĞµÄÃ¿¸öÎÄ·¨·ûºÅ£¬GOTO(I, X)·Ç¿ÕÇÒ²»ÔÚ±Õ°üÖĞ£¬Ôò½«GOTO¼ÓÈë±Õ°ü
     while (!itemset_queue.empty()) {
-        //å–é¡¹é›†ï¼Œéå†æ¯ä¸ªé¡¹ï¼Œå–é¡¹ç‚¹åçš„è¾“å…¥ç¬¦å·ï¼Œäº§ç”Ÿæ–°çŠ¶æ€ï¼Œæ–°çŠ¶æ€æ±‚é¡¹é›†æ—é—­åŒ…ï¼Œå¾—åˆ°é¡¹é›†ï¼ŒåŠ å…¥é¡¹é›†æ—ä¸­
-        //ç›´åˆ°æ²¡æœ‰æ–°é¡¹é›†åŠ å…¥é¡¹é›†æ—ï¼Œç¨‹åºç»ˆæ­¢
+        //È¡Ïî¼¯£¬±éÀúÃ¿¸öÏî£¬È¡ÏîµãºóµÄÊäÈë·ûºÅ£¬²úÉúĞÂ×´Ì¬£¬ĞÂ×´Ì¬ÇóÏî¼¯×å±Õ°ü£¬µÃµ½Ïî¼¯£¬¼ÓÈëÏî¼¯×åÖĞ
+        //Ö±µ½Ã»ÓĞĞÂÏî¼¯¼ÓÈëÏî¼¯×å£¬³ÌĞòÖÕÖ¹
         ItemSet itemset = itemset_queue.front();
         itemset_queue.pop();
-        // å¯¹æ¯ä¸ªæ–‡æ³•ç¬¦å·è¿›è¡Œæ‰©å±•
+        // ¶ÔÃ¿¸öÎÄ·¨·ûºÅ½øĞĞÀ©Õ¹
         map<char, ItemSet> next_itemsets;
         set<char> charSet;
         map<char,ItemSet> itemMap;
-        //éå†é¡¹é›†ä¸­çš„æ¯ä¸€ä¸ªé¡¹ï¼Œå–ç‚¹åçš„ç¬¬ä¸€ä¸ªå­—ç¬¦
+        //±éÀúÏî¼¯ÖĞµÄÃ¿Ò»¸öÏî£¬È¡µãºóµÄµÚÒ»¸ö×Ö·û
         for (const auto& item : itemset.items){
             auto item1 = item;
-            //å¦‚æœç‚¹ä¸åœ¨æœ€åï¼Œä¸ºç§»è¿›/å¾…çº¦é¡¹ç›®ï¼Œç‚¹åç§»
+            //Èç¹ûµã²»ÔÚ×îºó£¬ÎªÒÆ½ø/´ıÔ¼ÏîÄ¿£¬µãºóÒÆ
             if (item.dot < item.rule.r.length()){
                 charSet.insert(item.rule.r[item.dot]);
                 item1.dot++;
                 itemMap[item.rule.r[item.dot]].items.insert(item1);
             }else{
-                //ç‚¹åœ¨æœ€åï¼Œå½’çº¦ï¼Œæ–°å¢Actionè¡¨ï¼Œç¬¬äºŒä¸ªItemSetä¸­æœ‰ä¸€ä¸ªäº§ç”Ÿå¼ï¼ˆè¡¨ç¤ºä½¿ç”¨è¿™æ¡äº§ç”Ÿå¼å½’çº¦ï¼‰
+                //µãÔÚ×îºó£¬¹éÔ¼£¬ĞÂÔöAction±í£¬µÚ¶ş¸öItemSetÖĞÓĞÒ»¸ö²úÉúÊ½£¨±íÊ¾Ê¹ÓÃÕâÌõ²úÉúÊ½¹éÔ¼£©
                 for (const auto &l: item.lookahead){
                     ItemSet iss;
                     Item ii;
                     Production p = item.rule;
                     ii.rule = p;
                     iss.items.insert(ii);
-                    //å¯¹äºZ -> S.ï¼ŒçŠ¶æ€ä¸ºacc
+                    Action[itemset][l] = {iss, true};
+                    //¶ÔÓÚZ -> S.£¬×´Ì¬Îªacc
                     if (p.l == 'Z' && p.r == "S"){
                         iss.name = "ACC";
+                        Action[itemset][l] = {iss, false};
                     }
-                    Action[itemset][l] = {iss, true};
+
                 }
             }
         }
-        //éå†æ‰€æœ‰å¯è¾“å…¥é¡¹ï¼Œå¯¹äºæ¯ä¸ªå¯è¾“å…¥é¡¹ï¼Œåœ¨é¡¹é›†ä¸­å¯»æ‰¾é¡¹çš„è¡¨è¾¾å¼ï¼Œç»„æˆä¸€ä¸ªé¡¹é›†ï¼Œå°†å…¶æ±‚é—­åŒ…ï¼Œé—­åŒ…ç»“æœæ–°å»ºçŠ¶æ€
+        //±éÀúËùÓĞ¿ÉÊäÈëÏî£¬¶ÔÓÚÃ¿¸ö¿ÉÊäÈëÏî£¬ÔÚÏî¼¯ÖĞÑ°ÕÒÏîµÄ±í´ïÊ½£¬×é³ÉÒ»¸öÏî¼¯£¬½«ÆäÇó±Õ°ü£¬±Õ°ü½á¹ûĞÂ½¨×´Ì¬
         for (auto& c:charSet) {
-            cout<<c<<"|";
+//            cout<<c<<"|";
             ItemSet iss = itemMap[c];
-            //æ±‚å®Œé—­åŒ…åï¼Œå¾—åˆ°æ–°çŠ¶æ€ï¼Œæ–°çŠ¶æ€å¦‚æœä¸å­˜åœ¨ï¼Œé‚£ä¹ˆæ–°å¢ï¼Œå¾—åˆ°çŠ¶æ€åï¼ˆæ— è®ºæ˜¯å¦æ–°å¢ï¼‰ï¼Œæ·»åŠ å…³ç³»è½¬ç§»è¡¨
+            //ÇóÍê±Õ°üºó£¬µÃµ½ĞÂ×´Ì¬£¬ĞÂ×´Ì¬Èç¹û²»´æÔÚ£¬ÄÇÃ´ĞÂÔö£¬µÃµ½×´Ì¬ºó£¨ÎŞÂÛÊÇ·ñĞÂÔö£©£¬Ìí¼Ó¹ØÏµ×ªÒÆ±í
             closure(iss);
-            //æ ‡è®°flagï¼Œå€¼ä¸å˜è¯´æ˜æ²¡æœ‰æ‰¾åˆ°å·²æœ‰é¡¹é›†ï¼Œæ­¤æ—¶æ–°å»ºä¸€ä¸ªé¡¹é›†
+            //±ê¼Çflag£¬Öµ²»±äËµÃ÷Ã»ÓĞÕÒµ½ÒÑÓĞÏî¼¯£¬´ËÊ±ĞÂ½¨Ò»¸öÏî¼¯
             int flag = 0;
             for (auto& i:itemsets) {
-                //i == issï¼Œè¯´æ˜æ‰¾åˆ°äº†å®Œå…¨ä¸€è‡´çš„itemsetï¼Œä¸éœ€è¦æ–°å¢çŠ¶æ€
+                //i == iss£¬ËµÃ÷ÕÒµ½ÁËÍêÈ«Ò»ÖÂµÄitemset£¬²»ĞèÒªĞÂÔö×´Ì¬
                 if (i == iss){
                     flag = 1;
                     iss.name = i.name;
                     break;
                 }
             }
-            //æ²¡æ‰¾åˆ°ä¸€è‡´çš„çŠ¶æ€,æ–°å¢
+            //Ã»ÕÒµ½Ò»ÖÂµÄ×´Ì¬,ĞÂÔö
             if (!flag){
                 iss.name = "I" + to_string(itemsets.size());
                 itemset_queue.push(iss);
                 itemsets.insert(iss);
             }
-            //å°†çŠ¶æ€è½¬ç§»ç»“æœåŠ å…¥ACTION/GOTOè¡¨
-            //å¯¹äºå¤§å†™å­—æ¯ï¼ˆéç»ˆç»“ç¬¦ï¼‰ï¼Œå°†çŠ¶æ€è½¬ç§»åŠ å…¥GOTOè¡¨
+            //½«×´Ì¬×ªÒÆ½á¹û¼ÓÈëACTION/GOTO±í
+            //¶ÔÓÚ´óĞ´×ÖÄ¸£¨·ÇÖÕ½á·û£©£¬½«×´Ì¬×ªÒÆ¼ÓÈëGOTO±í
             if (isupper(c)){
                 Goto[itemset][c] = iss;
             }else{
-                //å¯¹äºéç»ˆç»“ç¬¦ï¼ŒçŠ¶æ€åŠ å…¥Actionï¼Œä¸ºç§»è¿›çŠ¶æ€
+                //¶ÔÓÚ·ÇÖÕ½á·û£¬×´Ì¬¼ÓÈëAction£¬ÎªÒÆ½ø×´Ì¬
                 Action[itemset][c] = {iss, false};
             }
         }
-//        for (const auto& item : itemset.items) {
-//            //å¦‚æœç‚¹ä¸åœ¨æœ€åï¼Œè¿›è¡Œæ“ä½œï¼Œå¦åˆ™è·³è¿‡è¯¥é¡¹
-//            if (item.dot < item.rule.r.length()) {
-//                //å–å¾—éœ€è¦è¾“å…¥çš„å­—ç¬¦
-//                char next_symbol = item.rule.r[item.dot];
-//                //è®¡ç®—å±•æœ›ç¬¦
-//                set<char> lookahead;
-//                //ä¸‹ä¸€çŠ¶æ€ä¸æ˜¯å½’çº¦æ€
-//                if (item.dot < item.rule.r.length() - 1) {
-//                    // ä¸æ˜¯æœ€åä¸€ä¸ªç¬¦å·ï¼Œå–åé¢ä¸€ä¸ªç¬¦å·çš„FIRSTé›†åˆ
-//                    string s = item.rule.r.substr(item.dot+1);
-//                    lookahead = calc_first_s(s, first_set, Productions);
-//                } else {
-//                    // æ˜¯æœ€åä¸€ä¸ªç¬¦å·ï¼Œç›´æ¥å–å½“å‰é¡¹çš„å±•æœ›ç¬¦
-//                    lookahead = item.lookahead;
-//                }
-//
-//                // è®¡ç®—ä¸‹ä¸€ä¸ªé¡¹é›†
-//                Item next_item = { item.rule, item.dot + 1, lookahead };
-//                ItemSet& next_itemset = next_itemsets[next_symbol];
-//                next_itemset.items.insert(next_item);
-//            }
-//        }
-
-        // å°†è®¡ç®—å¾—åˆ°çš„æ–°é¡¹é›†åŠ å…¥é¡¹é›†æ—ä¸­ï¼Œå¹¶å°†å…¶åŠ å…¥å¾…å¤„ç†é˜Ÿåˆ—ä¸­
-//        for (auto& [symbol, next_itemset] : next_itemsets) {
-//            ItemSet closure_itemset = closure(next_itemset);
-//            if (itemsets.count(closure_itemset) == 0) {
-//                itemsets.insert(closure_itemset);
-//                itemset_queue.push(closure_itemset);
-//            }
-//        }
     }
     is = itemsets;
     return itemsets;
 }
 
 
-//è®¡ç®—é¡¹é›†æ—é—­åŒ…
-//éå†æ¯ä¸ªäº§ç”Ÿå¼ï¼Œå¦‚æœç‚¹åå­—ç¬¦ä¸²æ˜¯éç»ˆç»“ç¬¦ï¼Œå°†è¯¥éç»ˆç»“ç¬¦çš„äº§ç”Ÿå¼åŠ å…¥ï¼Œç‚¹åœ¨ç¬¬ä¸€ä½ï¼Œåˆ†ææ–°åŠ å…¥çš„äº§ç”Ÿå¼
+//¼ÆËãÏî¼¯×å±Õ°ü
+//±éÀúÃ¿¸ö²úÉúÊ½£¬Èç¹ûµãºó×Ö·û´®ÊÇ·ÇÖÕ½á·û£¬½«¸Ã·ÇÖÕ½á·ûµÄ²úÉúÊ½¼ÓÈë£¬µãÔÚµÚÒ»Î»£¬·ÖÎöĞÂ¼ÓÈëµÄ²úÉúÊ½
 ItemSet LR::closure(ItemSet& items) {
 //    ItemSet item_set;
     queue<Item> item_queue;
-    //éå†è¾“å…¥çš„ItemSetï¼ŒæŠŠæ¯ä¸ªItemæ”¾å…¥é˜Ÿåˆ—ä¸­
+    //±éÀúÊäÈëµÄItemSet£¬°ÑÃ¿¸öItem·ÅÈë¶ÓÁĞÖĞ
     for (auto& item : items.items) {
         item_queue.push(item);
     }
-    //æ ¹æ®é˜Ÿåˆ—é¡ºåºï¼Œä¾æ¬¡å¤„ç†
+    //¸ù¾İ¶ÓÁĞË³Ğò£¬ÒÀ´Î´¦Àí
     while (!item_queue.empty()) {
-        //å–ä¸€ä¸ªé¡¹ï¼Œæ¯”å¦‚"Z -> .S", $, æœ‰ rule.l = '\'', rule.r = S, dot = 0, lookahead = {$}
+        //È¡Ò»¸öÏî£¬±ÈÈç"Z -> .S", $, ÓĞ rule.l = '\'', rule.r = S, dot = 0, lookahead = {$}
         auto item = item_queue.front();
         item_queue.pop();
-        //ç‚¹å·åœ¨æœ€å³ç«¯ï¼Œä¸éœ€è¦å¤„ç†ï¼Œè·³è¿‡
+        //µãºÅÔÚ×îÓÒ¶Ë£¬²»ĞèÒª´¦Àí£¬Ìø¹ı
         if (item.dot == item.rule.r.size()) {
             continue;
         }
-        //å–ç‚¹åç¬¬ä¸€ä¸ªå­—ç¬¦
+        //È¡µãºóµÚÒ»¸ö×Ö·û
         char next_symbol = item.rule.r[item.dot];
-        //ç‚¹åæ˜¯ç»ˆç»“ç¬¦ï¼ˆæ¯”å¦‚å°å†™å­—æ¯ï¼‰ï¼Œä¸éœ€è¦å¤„ç†ï¼Œè·³è¿‡
+        //µãºóÊÇÖÕ½á·û£¨±ÈÈçĞ¡Ğ´×ÖÄ¸£©£¬²»ĞèÒª´¦Àí£¬Ìø¹ı
         if (!isupper(next_symbol)) {
             continue;
         }
-        //ç‚¹å·ä¸åœ¨æœ€å³ç«¯ï¼Œç‚¹åä¸æ˜¯ç»ˆç»“ç¬¦ï¼Œæ‰€ä»¥ç‚¹åæ˜¯éç»ˆç»“ç¬¦ï¼ˆå¤§å†™å­—æ¯ï¼‰ï¼Œæ­¤æ—¶éœ€è¦å¤„ç†
-        //å°†éç»ˆç»“ç¬¦çš„æ¨å¯¼åŠ å…¥ç‚¹åœ¨ç¬¬ä¸€ä½ï¼Œå±•æœ›ç¬¦æ˜¯ä»è¿™ä¸€ä½å¼€å§‹åˆ°ç»“å°¾çš„FIRSTé›†
-        //éå†äº§ç”Ÿå¼é›†åˆï¼Œæ‰¾åˆ°éœ€è¦åŠ å…¥çš„é¡¹
+        //µãºÅ²»ÔÚ×îÓÒ¶Ë£¬µãºó²»ÊÇÖÕ½á·û£¬ËùÒÔµãºóÊÇ·ÇÖÕ½á·û£¨´óĞ´×ÖÄ¸£©£¬´ËÊ±ĞèÒª´¦Àí
+        //½«·ÇÖÕ½á·ûµÄÍÆµ¼¼ÓÈëµãÔÚµÚÒ»Î»£¬Õ¹Íû·ûÊÇ´ÓÕâÒ»Î»¿ªÊ¼µ½½áÎ²µÄFIRST¼¯
+        //±éÀú²úÉúÊ½¼¯ºÏ£¬ÕÒµ½ĞèÒª¼ÓÈëµÄÏî
         for (auto& prod : Productions) {
-            //æ‰¾åˆ°å¯¹åº”çš„å¼å­
+            //ÕÒµ½¶ÔÓ¦µÄÊ½×Ó
             if (prod.l == next_symbol) {
-                //æ±‚ä»è¿™ä¸€ä½å¼€å§‹åˆ°ç»“å°¾çš„FIRSTé›†åˆï¼Œä½œä¸ºå±•æœ›ç¬¦
+                //Çó´ÓÕâÒ»Î»¿ªÊ¼µ½½áÎ²µÄFIRST¼¯ºÏ£¬×÷ÎªÕ¹Íû·û
                 string s = item.rule.r.substr(item.dot + 1);
                 set<char> lookahead;
                 for (auto & l:item.lookahead) {
@@ -435,9 +378,9 @@ ItemSet LR::closure(ItemSet& items) {
                     set<char> c = calc_first_s(ss, first_set, Productions);
                     addAllElement(lookahead,c);
                 }
-                //åŠ å…¥é¡¹ä¸­
+                //¼ÓÈëÏîÖĞ
                 Item new_item{prod, 0, lookahead};
-                //æ‰¾ä¸åˆ°ï¼ŒåŠ å…¥é›†åˆ
+                //ÕÒ²»µ½£¬¼ÓÈë¼¯ºÏ
                 if (items.items.find(new_item) == items.items.end()) {
                     items.items.insert(new_item);
                     item_queue.push(new_item);
@@ -448,9 +391,9 @@ ItemSet LR::closure(ItemSet& items) {
     return items;
 }
 
-//è¾“å‡ºé¡¹é›†æ—ä¸çŠ¶æ€è½¬ç§»
+//Êä³öÏî¼¯×åÓë×´Ì¬×ªÒÆ
 void LR::printItemSet() {
-    cout<<endl;
+    cout<<"ItemSet:"<<endl;
     for (const auto& i:is) {
         cout<<i.name<<": "<<endl;
         for (const auto& item : i.items){
@@ -463,7 +406,7 @@ void LR::printItemSet() {
             cout<<"}"<<endl;
         }
         nonTerminals.insert('$');
-        //éå†ACTIONåŠGOTOè¡¨ï¼Œè¾“å‡ºè¯¥é¡¹é›†å‡ºçš„çŠ¶æ€è½¬ç§»
+        //±éÀúACTION¼°GOTO±í£¬Êä³ö¸ÃÏî¼¯³öµÄ×´Ì¬×ªÒÆ
         for (const auto &c: nonTerminals){
             auto a = Action[i][c];
             if (!a.first.name.empty()){
@@ -486,67 +429,190 @@ void LR::printItemSet() {
 }
 
 void LR::printProduction() {
+    cout<<"Productions:"<<endl;
     for (auto const& p:Productions) {
         cout<<p.l<<" -> "<<p.r<<endl;
     }
 }
 
-//int main(){
-//    LR lr;
-//    //è¯»è¯­æ³•
-//    lr.readGrammar(GRAMMAR_2NF_PATH);
-//    lr.construct_LR1_itemsets();
-//    lr.printItemSet();
-//    return 0;
-//}
+//Óï·¨·ÖÎö
+//ÊäÈëTokenµÄÂ·¾¶path£¬¶ÁÈ¡Token±í£¬¶Ô¸ÃToken½øĞĞÓï·¨·ÖÎö£¬
+//Èç¹ûÍ¨¹ı±àÒë£¬Êä³ö"YES"£¬·ñÔòÊä³ö"NO"
+void LR::parse(string path) {
+    //¶ÁÈ¡TokenÖÁToken¼¯ºÏ, ²¢½«Token±í×ª»»Îª¿É½ÓÊÜµÄ·ûºÅ´®
+    string ts = readToken(path);
+    //·ûºÅÕ»
+    stack<char> charStack;
+    //×´Ì¬Õ»
+    stack<ItemSet> stateStack;
+    //ÉèÖÃ³õÌ¬
+    charStack.push('$');
+    ItemSet iss = *is.begin();
+    stateStack.push(iss);
+    //ÏÈÉèÖÃÎªDFAµÄ³õÌ¬£¬È»ºóÒÀ´Î¶ÁÈ¡×Ö·û£¬°´ÕÕACTION¼°GOTO±í½øĞĞ×´Ì¬×ªÒÆ£¬µ½´ïACCËµÃ÷±»½ÓÊÜ£»
+    //Èç¹û²»±»½ÓÊÜ¸ø³öÏà¹ØÌáÊ¾
+    //´ÓµÚÒ»¸ö×Ö·û¿ªÊ¼±éÀútokenString£¬¶ÔÊäÈëµÄ×Ö·ûÒÀ´Î°´ÕÕACTION¼°GOTO±í´¦Àí
+    //Èç¹ûÊÇÒÆ½ø/´ıÔ¼×´Ì¬£¬Õı³£ÈëÕ»³öÕ»¼´¿É
+    //Èç¹ûÊÇ¹éÔ¼×´Ì¬£¬Ê×ÏÈ²»ÒªÁ¢¼´ÈëÕ»£¬Ê×ÏÈ¹éÔ¼ÏîÄ¿£¬È·±£Ã»ÓĞ¹éÔ¼ÏîºóÔÙÒÆ½ø×Ö·û
+    for (int i = 0; i < ts.size(); ++i) {
+        //È¡Õ»¶¥ÔªËØ
+        auto& top = stateStack.top();
+        ItemSet next;
+        //´óĞ´×ÖÄ¸£¨·ÇÖÕ½á·û£©£¬²éGOTO±í£¬·ñÔò²éACTION±í
+        if (isupper(ts[i])){
+            next = Goto[top][ts[i]];
+        } else {
+            auto p = Action[top][ts[i]];
 
-//void LR::calculateFirstSet() {
-//    // å¯¹äºæ¯ä¸ªç»ˆç»“ç¬¦ï¼ŒFIRSTé›†åˆå°±æ˜¯å®ƒè‡ªå·±
-//    for (char c : terminals) {
-//        first_set[c].insert(c);
-//    }
-//    // å¯¹äºæ¯ä¸ªéç»ˆç»“ç¬¦ï¼Œå°†FIRSTé›†åˆåˆå§‹åŒ–ä¸ºç©º
-//    for (char c : nonTerminals) {
-//        first_set[c] = {};
-//    }
-//    // è®¡ç®—æ‰€æœ‰ç»ˆç»“ç¬¦å’Œéç»ˆç»“ç¬¦çš„FIRSTé›†åˆ
-//    bool changed = true;
-//    while (changed) {
-//        changed = false;
-//        for (const Production& p : Productions) {
-//            char lhs = p.l;
-//            const string& rhs = p.r;
-//            for (int i = 0; i < rhs.size(); i++) {
-//                char c = rhs[i];
-//                if (terminals.find(c) != terminals.end()) {
-//                    if (first_set[lhs].find(c) == first_set[lhs].end()) {
-//                        first_set[lhs].insert(c);
-//                        changed = true;
-//                    }
-//                    break;
-//                } else {
-//                    bool flag = false;
-//                    for (char f : first_set[c]) {
-//                        if (f != '$' && first_set[lhs].find(f) == first_set[lhs].end()) {
-//                            first_set[lhs].insert(f);
-//                            changed = true;
-//                        }
-//                        if (f == '$') {
-//                            flag = true;
-//                        }
-//                    }
-//                    if (!flag) {
-//                        break;
-//                    }
-//                }
-//            }
-//            if (i == rhs.size() && first_set[lhs].find('@') == first_set[lhs].end()) {
-//                first_set[lhs].insert('@');
-//                changed = true;
-//            }
-//        }
-//    }
-//}
+            //boolÎªÕæ£¬´ËÊ±ĞèÒª¹éÔ¼
+            //¹éÔ¼¹ı³Ì£¬È¡¹éÔ¼´®£¬½«´®ÖĞÄÚÈİÁ¬Í¬Æä¶ÔÓ¦×´Ì¬ÒÀ´Î³öÕ»£¬È»ºó½«¹éÔ¼Ê½×Ó×ó±ßÈëÕ»£¬
+            //È¡×´Ì¬Õ»Õ»¶¥£¬²éÑ¯ĞÂÈëÕ»ÔªËØµÄGOTO±í£¬½«ÕÒµ½µÄ×´Ì¬¼ÓÈë×´Ì¬Õ»£¬½Ó×Å²é¿´ÏÂÒ»¸ö×´Ì¬
+            while (p.second == true){
+                    //È¡¹éÔ¼Ê½
+                    Production pp = p.first.items.begin()->rule;
+                    //ÄæĞò±éÀú¹éÔ¼Ê½ÓÒ±ß£¬½«ÄÚÈİÒÀ´Î³öÕ»
+                    for (int j = pp.r.size() - 1; j >= 0; --j) {
+                        stateStack.pop();
+                        charStack.pop();
+                    }
+                    //×ó±ßÈëÕ»
+                    charStack.push(pp.l);
+                    //²éGOTO±í
+                    auto ppp = Goto[stateStack.top()][pp.l];
+                    //×´Ì¬ÈëÕ»
+                    stateStack.push(ppp);
+                    p = Action[stateStack.top()][ts[i]];
+            }
+            //¹éÔ¼´¦ÀíÍê£¬ÒÆ½ø
+            next = Action[stateStack.top()][ts[i]].first;
+        }
+        //ÈëÕ»
+        charStack.push(ts[i]);
+        stateStack.push(next);
+    }
+    if (stateStack.top().name == "ACC"){
+        cout<<"YES"<<endl;
+    }else
+        cout<<"NO"<<endl;
+}
+
+string LR::readToken(string path) {
+    readDic(MATCH_PATH);
+    //´ò¿ªÎÄ¼ş£¬½«Token¶ÁÈ¡½øToken¼¯ÖĞ£¬È»ºó¶ÔToken½øĞĞ·ÖÎö
+    string line;
+    ifstream file(path);
+    if (!file){
+        cout << "ÕÒ²»µ½Ô´´úÂëÎÄ¼ş£¡" << endl;
+        return "";
+    }
+    string s = "";
+    //´ÓfileÖĞ»ñÈ¡Ò»ĞĞ£¬±£´æÔÚlineÖĞ£¬ÖğĞĞ´¦Àí£¬´æÈëToken±í
+    while(getline(file,line)){
+        istringstream iss(line);
+        string l, type, value;
+
+        //¸ù¾İ¿Õ¸ñÇĞ·Ö£¬ÒÀ´ÎµÃµ½ĞĞºÅ¡¢ÀàĞÍ¡¢Öµ
+        iss >> l >> type >> value;
+        Token token;
+        token.line = stoi(l);
+        token.value = value;
+        if (!type.compare("KEYWORD")){
+            token.type = KEYWORD;
+            if (!dic[token.value]){
+                dic[token.value] = 'k';
+            }
+        }else if (!type.compare("IDENTIFIER")){
+            token.type = IDENTIFIER;
+            dic[token.value] = 't';
+        } else if (!type.compare("CONSTANT")){
+            token.type = CONSTANT;
+            dic[token.value] = 'd';
+        } else if (!type.compare("DELIMITER")){
+            if (token.value == "\\0" || token.value == "\\t" || token.value == "\\n"){
+                //Ìø¹ı¿Õ¸ñ
+                continue;
+            }
+            token.type = DELIMITER;
+            dic[token.value] = token.value[0];
+        } else if (!type.compare("OPERATOR")){
+            token.type = OPERATOR;
+            if (!dic[token.value]){
+                dic[token.value] = token.value[0];
+            }
+        }
+        s += dic[token.value];
+        tokens.push_back(token);
+        if (line.empty()){
+            break;
+        }
+    }
+    file.close();
+    s += '$';
+    return s;
+}
+
+//½«Token±í×ª»»Îª×Ô¶¯»úÄÜÊ¶±ğµÄ·ûºÅ´®
+string LR::tokenToString() {
+    //ºóĞøÓÅ»¯£º¶ÁÈ¡×ÖµäÎÄ¼ş ²»ÊÖ¶¯¸³Öµ£¬¹¦ÄÜ¿¼ÂÇºÏ²¢µ½readToken()ÖĞ
+    string s = "";
+    for (const auto &t: tokens){
+        if (t.type == CONSTANT){
+            s += "d";
+        } else if (t.type == DELIMITER){
+            if (t.value == "\\0" || t.value == "\\t" || t.value == "\\n"){
+                //Ìø¹ı¿Õ¸ñ
+                continue;
+            }
+            s += t.value;
+        } else if (t.type == OPERATOR){
+            if (t.value == "+" || t.value == "-")
+                s+="p";
+            else if (t.value == "*" || t.value == "/")
+                s+="m";
+            else
+                s+="r";
+        } else if (t.type == KEYWORD){
+            //µ¥¶ÀÉèÖÃkeyword¶ÔÕÕ±í´¦Àí
+        } else if (t.type == IDENTIFIER){
+            s += "t";
+        } else{
+            //±¨´í
+        }
+    }
+    s += '$';
+    return s;
+}
+
+//¶ÁÈ¡¹Ø¼ü×Ö¶ÔÓ¦µÄ×Öµä
+void LR::readDic(string path) {
+    //´ò¿ªÎÄ¼ş£¬½«¹Ø¼ü×ÖµÄ¶ÔÓ¦¶ÁÈë£¬±£´æÔÚÀàÖĞ×ÖµäÖĞ
+    string line;
+    ifstream file(path);
+    if (!file){
+        cout << "ÕÒ²»µ½Ô´´úÂëÎÄ¼ş£¡" << endl;
+        return ;
+    }
+    getline(file,line);
+    //´ÓfileÖĞ»ñÈ¡Ò»ĞĞ£¬±£´æÔÚlineÖĞ£¬ÖğĞĞ´¦Àí£¬´æÈëdic
+    while(!line.empty()){
+        //Ìø¹ı×¢ÊÍ
+        line = trim(line);
+        if (line[0] == '/' && line[1] == '/'){
+            line.clear();
+            getline(file,line);
+            if (line.empty()) break;
+            continue;
+        }
+        istringstream iss(line);
+        string key;
+        char value;
+        //¸ù¾İ¿Õ¸ñÇĞ·Ö£¬µÃµ½keyÓëvalue
+        iss >> key >> value;
+        dic[key] = value;
+        getline(file,line);
+    }
+    file.close();
+}
 
 
 
