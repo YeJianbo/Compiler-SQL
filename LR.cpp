@@ -4,6 +4,27 @@
 
 #include "LR.h"
 
+
+template<class T>
+void reverseStack(stack<T> &s) {
+    if (s.empty()) {
+        return;
+    }
+    auto temp = s.top();
+    s.pop();
+    reverseStack(s);
+    stack<T> tempStack;
+    while (!s.empty()) {
+        tempStack.push(s.top());
+        s.pop();
+    }
+    s.push(temp);
+    while (!tempStack.empty()) {
+        s.push(tempStack.top());
+        tempStack.pop();
+    }
+}
+
 void addAllElement(set<char> &destSet, const set<char> &sourceSet) {
     for (const auto& element : sourceSet)
     {
@@ -439,6 +460,8 @@ void LR::printProduction() {
 //输入Token的路径path，读取Token表，对该Token进行语法分析，
 //如果通过编译，输出"YES"，否则输出"NO"
 void LR::parse(string path) {
+    //记录处理次数，用于输出处理过程
+    int n = 0;
     //读取Token至Token集合, 并将Token表转换为可接受的符号串
     string ts = readToken(path);
     //符号栈
@@ -449,7 +472,7 @@ void LR::parse(string path) {
     charStack.push('$');
     ItemSet iss = *is.begin();
     stateStack.push(iss);
-    //先设置为DFA的初态，然后依次读取字符，按照ACTION及GOTO表进行状态转移，到达ACC说明被接受；
+    //先设置DFA的初态，然后依次读取字符，按照ACTION及GOTO表进行状态转移，到达ACC说明被接受；
     //如果不被接受给出相关提示
     //从第一个字符开始遍历tokenString，对输入的字符依次按照ACTION及GOTO表处理
     //如果是移进/待约状态，正常入栈出栈即可
@@ -461,34 +484,74 @@ void LR::parse(string path) {
         //大写字母（非终结符），查GOTO表，否则查ACTION表
         if (isupper(ts[i])){
             next = Goto[top][ts[i]];
+
         } else {
+            //
             auto p = Action[top][ts[i]];
 
             //bool为真，此时需要归约
             //归约过程，取归约串，将串中内容连同其对应状态依次出栈，然后将归约式子左边入栈，
             //取状态栈栈顶，查询新入栈元素的GOTO表，将找到的状态加入状态栈，接着查看下一个状态
             while (p.second == true){
-                    //取归约式
-                    Production pp = p.first.items.begin()->rule;
-                    //逆序遍历归约式右边，将内容依次出栈
-                    for (int j = pp.r.size() - 1; j >= 0; --j) {
-                        stateStack.pop();
-                        charStack.pop();
-                    }
-                    //左边入栈
-                    charStack.push(pp.l);
-                    //查GOTO表
-                    auto ppp = Goto[stateStack.top()][pp.l];
-                    //状态入栈
-                    stateStack.push(ppp);
-                    p = Action[stateStack.top()][ts[i]];
+                //取归约式
+                Production pp = p.first.items.begin()->rule;
+                //逆序遍历归约式右边，将内容依次出栈
+                for (int j = pp.r.size() - 1; j >= 0; --j) {
+                    stateStack.pop();
+                    charStack.pop();
+                }
+                //左边入栈
+                charStack.push(pp.l);
+                //查GOTO表
+                auto ppp = Goto[stateStack.top()][pp.l];
+                //状态入栈
+                stateStack.push(ppp);
+                p = Action[stateStack.top()][ts[i]];
+                cout<<"第 "<<++n<<" 次处理"<<endl;
+                cout<<"当前读取字符："<<ts[i]<<endl;
+                cout<<"charStack: ";
+                auto cc = charStack;
+                reverseStack(cc);
+                for (auto temp = cc; !temp.empty(); temp.pop()) {
+                    cout << temp.top() << " ";
+                }
+                cout<<endl<<"stateStack:";
+                auto ss = stateStack;
+                reverseStack(ss);
+                for (auto temp = ss; !temp.empty(); temp.pop()) {
+                    cout << temp.top().name << " ";
+                }
+                cout<<endl<<"通过产生式【"<<pp.l<<" -> "<<pp.r<<"】归约"<<endl;
             }
             //归约处理完，移进
             next = Action[stateStack.top()][ts[i]].first;
         }
+        //如果名称非空，说明不存在下一状态，此时输出提醒，终止分析
+        if (next.name.empty()){
+            //取ts[i]所在Token的行数，一并输出
+            auto token = tokenLine[i];
+            cout << "错误：输入字符【"<<ts[i]<<"】，找不到下一状态！行数："<<token.line<<endl;
+
+            break;
+        }
         //入栈
         charStack.push(ts[i]);
         stateStack.push(next);
+        cout<<"第 "<<++n<<" 次处理"<<endl;
+        cout<<"当前读取字符："<<ts[i]<<endl;
+        cout<<"charStack: ";
+        auto cc = charStack;
+        reverseStack(cc);
+        for (auto temp = cc; !temp.empty(); temp.pop()) {
+            cout << temp.top() << " ";
+        }
+        cout<<endl<<"stateStack:";
+        auto ss = stateStack;
+        reverseStack(ss);
+        for (auto temp = ss; !temp.empty(); temp.pop()) {
+            cout << temp.top().name << " ";
+        }
+        cout<<endl<<"动作：移进"<<endl;
     }
     if (stateStack.top().name == "ACC"){
         cout<<"YES"<<endl;
@@ -540,6 +603,7 @@ string LR::readToken(string path) {
                 dic[token.value] = token.value[0];
             }
         }
+        tokenLine[s.size()] = token;
         s += dic[token.value];
         tokens.push_back(token);
         if (line.empty()){

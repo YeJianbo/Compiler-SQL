@@ -79,6 +79,8 @@ private:
     stack<char> tokenString;
 
     map<string,char> dic;
+
+    map<int,Token> tokenLine;
 public:
 
     //从path中读取上下文无关文法，保存到产生式集合中，并将该集合返回

@@ -1,5 +1,18 @@
-  int i=2952;
-  float a = 89.64;
-  float b = 1.145e+14;
-  complex d = 89+64i;
-  double c = a + b;
+using namespace std;
+int main(){
+    int i = 2952;
+    float a = 89.64;
+    float b = 1.145e+14;
+    complex d = 89+64i;
+    double c = a + b;
+    int y = 0;
+    for(int x = 0; x < i; x+=1){
+        if(i == 2952){
+            y += x;
+            i -= 1;
+        }else{
+            y -= x;
+        }
+    }
+    return 0;
+}

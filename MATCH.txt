@@ -1,3 +1,4 @@
+include a
 begin b
 const c
 //Constant -> d(常量)
@@ -10,19 +11,36 @@ int g
 double g
 float g
 complex g
+void g
 end h
 if i
+//头文件名 用j表示
+iostream j
 //其他Keyword -> k
 //Identifier -> t (标识符用t表示)
+//l: namespace
+namespace l
 * m
 / m
+for n
+break o
+continue o
 + p
 - p
+return q
 == r
 <= r
 < r
 > r
 >= r
 != r
+std s
+class x
+struct x
+using u
 then v
 while w
++= y
+-= y
+*= y
+/= y

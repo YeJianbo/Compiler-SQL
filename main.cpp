@@ -20,7 +20,6 @@ int main() {
     cout<<"词法分析结果："<<endl;
     printTokens(tokens);
 */
-
     LR lr;
     //读语法
     lr.readGrammar(GRAMMAR_2NF_PATH);
