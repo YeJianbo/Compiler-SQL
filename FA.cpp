@@ -529,8 +529,9 @@ vector<Token> LAbyLine(FA dfa, string line, int n) {
 //            break;
 //        }
         state = transDFA[state][l[i]];
+        //找不到下一状态
         if (state.id == 0){
-            cout<<"程序错误！在第 "<< n <<" 行"<<endl;
+            cout<<"程序错误！未知错误在第 "<< n <<" 行"<<endl;
         }
         buf += l[i];
         //如果终态集中找不到state，说明不是终态
@@ -548,8 +549,12 @@ vector<Token> LAbyLine(FA dfa, string line, int n) {
                     //是关键字
                     if (keyword.find(buf) != keyword.end()) {
                         token.type = KEYWORD;
-                    } else
+                    } else{
                         token.type = IDENTIFIER;
+                        if (isdigit(buf[0])){
+                            cout << "程序错误！在第 " << n << "行发现了不合法的标识符：" << buf << endl;
+                        }
+                    }
                 } else if (isNodeNameEndsWith(state, "O")) {
                     token.type = OPERATOR;
                 } else if (isNodeNameEndsWith(state, "S")) {

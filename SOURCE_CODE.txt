@@ -1,4 +1,6 @@
 using namespace std;
+void func(){}
+void aaa();
 int main(){
     int i = 2952;
     float a = 89.64;
@@ -6,13 +8,13 @@ int main(){
     complex d = 89+64i;
     double c = a + b;
     int y = 0;
-    for(int x = 0; x < i; x+=1){
+    do{
         if(i == 2952){
             y += x;
             i -= 1;
         }else{
             y -= x;
         }
-    }
+    }while(x < i);
     return 0;
 }

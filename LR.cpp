@@ -521,7 +521,7 @@ void LR::parse(string path) {
                 for (auto temp = ss; !temp.empty(); temp.pop()) {
                     cout << temp.top().name << " ";
                 }
-                cout<<endl<<"通过产生式【"<<pp.l<<" -> "<<pp.r<<"】归约"<<endl;
+                cout<<endl<<"动作：通过产生式【"<<pp.l<<" -> "<<pp.r<<"】归约"<<endl<<endl;
             }
             //归约处理完，移进
             next = Action[stateStack.top()][ts[i]].first;
@@ -551,8 +551,9 @@ void LR::parse(string path) {
         for (auto temp = ss; !temp.empty(); temp.pop()) {
             cout << temp.top().name << " ";
         }
-        cout<<endl<<"动作：移进"<<endl;
+        cout<<endl<<"动作：移进"<<endl<<endl;
     }
+    cout<<"接收状态：";
     if (stateStack.top().name == "ACC"){
         cout<<"YES"<<endl;
     }else
@@ -614,6 +615,7 @@ string LR::readToken(string path) {
     s += '$';
     return s;
 }
+/*
 
 //将Token表转换为自动机能识别的符号串
 string LR::tokenToString() {
@@ -646,6 +648,7 @@ string LR::tokenToString() {
     s += '$';
     return s;
 }
+*/
 
 //读取关键字对应的字典
 void LR::readDic(string path) {

@@ -34,7 +34,7 @@ V -> tWR;
 //W -> += | -= | *= | /=
 W -> y
 //《函数》->《返回值》《函数名（identifier）》(《类型声明》){《程序》}????????
-F -> gt()Y
+F -> gt()Y | gt();
 //for(;;){}
 //《for》->for(《语句》;《语句》;《语句》)《单条语句》|{《多条语句》}
 K -> n(G;G;G)Y | n(G;G;G)I
@@ -50,7 +50,7 @@ M -> i(G)YeMeY|i(G)YeM|i(G)Y|i(G)IeMeI|i(G)IeM|i(G)I | i(G)YeY | i(G)IeI
 //《跳转语句》-> break;|continue;|return|return <identifier/Constant>
 X -> o; | q; | qR;
 //《代码块》-> {《语句》}
-Y -> {A}
+Y -> {A} | {}
 //《多语句》 -> 《for》 | 《while》 | 《do while》 | 《》
 //注意：for、while等应属单语句，但是此处作为多语句来处理。
 A -> KA | LA | DA | XA | YA |IA | CA | MA | VA | T

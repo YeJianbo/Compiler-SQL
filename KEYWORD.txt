@@ -29,3 +29,5 @@ while
 include
 std
 namespace
+do
+void

@@ -3,7 +3,6 @@
 
 
 int main() {
-/*
     //根据文法获取NFA
     FA fa;
     fa.GrammarToNFA(GRAMMAR_PATH);
@@ -19,7 +18,6 @@ int main() {
     vector<Token> tokens = LexicalAnalyze(dfa,SOURCE_PATH);
     cout<<"词法分析结果："<<endl;
     printTokens(tokens);
-*/
     LR lr;
     //读语法
     lr.readGrammar(GRAMMAR_2NF_PATH);

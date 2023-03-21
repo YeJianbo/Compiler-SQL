@@ -5,15 +5,6 @@
 #define GRAMMAR_2NF_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\GRAMMAR_2NF.txt"
 #define MATCH_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\MATCH.txt"
 
-//struct Symbol {
-////    int id;
-//    string value;
-//    bool is_terminal;
-//    bool operator<(const Symbol &o) const;
-//    bool operator==(const Symbol &o) const;
-//    bool operator!=(const Symbol &o) const;
-//};
-
 //产生式
 struct Production{
     char l;           //产生式左部
@@ -44,11 +35,6 @@ struct ItemSet{
     bool operator==(const ItemSet& o) const;
     bool operator<(const ItemSet& o) const;
 };
-
-//struct Node_LR{
-//    string name;
-//    int id;
-//};
 
 /*语法分析 步骤
  * 读取上下文无关文法（文件给出），保存产生式，增广产生式，计算LR(1)项集族，
@@ -81,6 +67,7 @@ private:
     map<string,char> dic;
 
     map<int,Token> tokenLine;
+
 public:
 
     //从path中读取上下文无关文法，保存到产生式集合中，并将该集合返回
@@ -105,12 +92,13 @@ public:
     //path:Token文件的路径
     void parse(string path);
 
+    //输出读入的Token，用于验证
     void printToken();
 
+    //读取Token
     string readToken(string path);
 
-    string tokenToString();
-
+    //读取MATCH.txt，用于匹配字符串到字符的映射
     void readDic(string path);
 };
 
