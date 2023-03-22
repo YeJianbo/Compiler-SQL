@@ -320,7 +320,6 @@ set<ItemSet> LR::construct_LR1_itemsets() {
                         iss.name = "ACC";
                         Action[itemset][l] = {iss, false};
                     }
-
                 }
             }
         }
@@ -431,17 +430,17 @@ void LR::printItemSet() {
         for (const auto &c: nonTerminals){
             auto a = Action[i][c];
             if (!a.first.name.empty()){
-                cout<<"--"<< c << "-->" << a.first.name<<"\t";
+                cout<<"--"<< c << "-->" << a.first.name<<"  ";
             } else {
                 Production pp = a.first.items.begin()->rule;
                 if (pp.l != '\0')
-                    cout<<"--"<< c << "--> {" << pp.l << " -> "<<pp.r<<"}\t";
+                    cout<<"--"<< c << "--> {" << pp.l << " -> "<<pp.r<<"}  ";
             }
         }
         for (const auto &c: terminals){
             auto g = Goto[i][c];
             if (!g.name.empty()){
-                cout<<"--"<< c << "-->" << g.name<<"\t";
+                cout<<"--"<< c << "-->" << g.name<<"  ";
             }
         }
         cout<<endl;
@@ -526,12 +525,24 @@ void LR::parse(string path) {
             //归约处理完，移进
             next = Action[stateStack.top()][ts[i]].first;
         }
-        //如果名称非空，说明不存在下一状态，此时输出提醒，终止分析
+        //如果名称空，说明不存在下一状态，此时输出提醒，终止分析
         if (next.name.empty()){
             //取ts[i]所在Token的行数，一并输出
             auto token = tokenLine[i];
             cout << "错误：输入字符【"<<ts[i]<<"】，找不到下一状态！行数："<<token.line<<endl;
-
+            //输出上一个字符对应的展望符
+            //遍历ACTION/GOTO表，输出有内容的字符
+            cout << "期望的输入：";
+            for (const auto &c: nonTerminals){
+                auto a = Action[stateStack.top()][c];
+                if (!a.first.name.empty()){
+                    cout<< dic2[c] <<"  ";
+                } else {
+                    if (a.first.items.begin()->rule.l != '\0')
+                        cout<< dic2[c] <<"  ";
+                }
+            }
+            cout<<endl;
             break;
         }
         //入栈
@@ -561,7 +572,7 @@ void LR::parse(string path) {
 }
 
 string LR::readToken(string path) {
-    readDic(MATCH_PATH);
+    readDic(MATCH_PATH,MATCH2_PATH);
     //打开文件，将Token读取进Token集中，然后对Token进行分析
     string line;
     ifstream file(path);
@@ -598,10 +609,12 @@ string LR::readToken(string path) {
             }
             token.type = DELIMITER;
             dic[token.value] = token.value[0];
+            dic2[token.value[0]] = token.value;
         } else if (!type.compare("OPERATOR")){
             token.type = OPERATOR;
             if (!dic[token.value]){
                 dic[token.value] = token.value[0];
+                dic2[token.value[0]] = token.value;
             }
         }
         tokenLine[s.size()] = token;
@@ -615,48 +628,14 @@ string LR::readToken(string path) {
     s += '$';
     return s;
 }
-/*
-
-//将Token表转换为自动机能识别的符号串
-string LR::tokenToString() {
-    //后续优化：读取字典文件 不手动赋值，功能考虑合并到readToken()中
-    string s = "";
-    for (const auto &t: tokens){
-        if (t.type == CONSTANT){
-            s += "d";
-        } else if (t.type == DELIMITER){
-            if (t.value == "\\0" || t.value == "\\t" || t.value == "\\n"){
-                //跳过空格
-                continue;
-            }
-            s += t.value;
-        } else if (t.type == OPERATOR){
-            if (t.value == "+" || t.value == "-")
-                s+="p";
-            else if (t.value == "*" || t.value == "/")
-                s+="m";
-            else
-                s+="r";
-        } else if (t.type == KEYWORD){
-            //单独设置keyword对照表处理
-        } else if (t.type == IDENTIFIER){
-            s += "t";
-        } else{
-            //报错
-        }
-    }
-    s += '$';
-    return s;
-}
-*/
 
 //读取关键字对应的字典
-void LR::readDic(string path) {
+void LR::readDic(string path1, string path2) {
     //打开文件，将关键字的对应读入，保存在类中字典中
     string line;
-    ifstream file(path);
+    ifstream file(path1);
     if (!file){
-        cout << "找不到源代码文件！" << endl;
+        cout << "找不到MATCH文件！" << endl;
         return ;
     }
     getline(file,line);
@@ -679,6 +658,32 @@ void LR::readDic(string path) {
         getline(file,line);
     }
     file.close();
+    string line2;
+    ifstream file2(path2);
+    if (!file2){
+        cout << "找不到MATCH2文件！" << endl;
+        return ;
+    }
+    getline(file2,line2);
+    //从file中获取一行，保存在line中，逐行处理，存入dic
+    while(!line.empty()){
+        //跳过注释
+        line2 = trim(line2);
+        if (line2[0] == '/' && line2[1] == '/'){
+            line2.clear();
+            getline(file2,line2);
+            if (line2.empty()) break;
+            continue;
+        }
+        istringstream iss2(line2);
+        char key2;
+        string value2;
+        //根据空格切分，得到key与value
+        iss2 >> key2 >> value2;
+        dic2[key2] = value2;
+        getline(file2,line2);
+    }
+    file2.close();
 }
 
 

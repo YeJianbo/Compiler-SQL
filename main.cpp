@@ -15,18 +15,17 @@ int main() {
     cout<<"DFA:"<<endl;
     dfa.printDFA();
     //进行词法分析
-    vector<Token> tokens = LexicalAnalyze(dfa,SOURCE_PATH);
-    cout<<"词法分析结果："<<endl;
-    printTokens(tokens);
+    int i = LexicalAnalyze(dfa,SOURCE_PATH);
+    if (!i){
+        cout<<"程序错误，现已终止！"<<endl;
+        return -1;
+    }
     LR lr;
-    //读语法
+    //语法分析
     lr.readGrammar(GRAMMAR_2NF_PATH);
     lr.printProduction();
-
-//    lr.is = lr.closure();
     lr.construct_LR1_itemsets();
     lr.printItemSet();
     lr.parse(TOKEN_PATH);
-//    lr.printToken();
     return 0;
 }

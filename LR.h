@@ -4,6 +4,7 @@
 #include "FA.h"
 #define GRAMMAR_2NF_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\GRAMMAR_2NF.txt"
 #define MATCH_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\MATCH.txt"
+#define MATCH2_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\MATCH2.txt"
 
 //产生式
 struct Production{
@@ -68,6 +69,8 @@ private:
 
     map<int,Token> tokenLine;
 
+    map<char,string> dic2;
+
 public:
 
     //从path中读取上下文无关文法，保存到产生式集合中，并将该集合返回
@@ -99,7 +102,7 @@ public:
     string readToken(string path);
 
     //读取MATCH.txt，用于匹配字符串到字符的映射
-    void readDic(string path);
+    void readDic(string path1, string path2);
 };
 
 

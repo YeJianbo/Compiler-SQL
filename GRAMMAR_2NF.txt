@@ -37,16 +37,16 @@ W -> y
 F -> gt()Y | gt();
 //for(;;){}
 //《for》->for(《语句》;《语句》;《语句》)《单条语句》|{《多条语句》}
-K -> n(G;G;G)Y | n(G;G;G)I
+K -> n(G;G;G)Y | n(G;G;G)I | n(G;G;G);
 //《while》->while(《单条语句》){《多条语句》}
-L -> w(G)Y | w(G)I
+L -> w(G)Y | w(G)I | w(G);
 //《do while》->do{<多条语句>}while(《单条语句》);
 D -> fYw(G); | fIw(G);
 //《空语句》-> ;
 //《单语句不带；》
 G -> gt=d | gt=t | tWR | trR
 //《if》->if(<语句>){}else if{}else{}
-M -> i(G)YeMeY|i(G)YeM|i(G)Y|i(G)IeMeI|i(G)IeM|i(G)I | i(G)YeY | i(G)IeI
+M -> i(G)YeMeY|i(G)YeM|i(G)Y|i(G)IeMeI|i(G)IeM|i(G)I | i(G)YeY | i(G)IeI | i(G);
 //《跳转语句》-> break;|continue;|return|return <identifier/Constant>
 X -> o; | q; | qR;
 //《代码块》-> {《语句》}

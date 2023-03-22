@@ -1,13 +1,13 @@
 #include "FA.h"
 
 
-//è¾“å…¥ä¸€ç»„èŠ‚ç‚¹ï¼Œç»™å®šä¸€ä¸ªè¾“å…¥inputï¼ˆæ¥è‡ªcharsetï¼‰,æ±‚ç»è¿‡è¯¥inputåˆ°è¾¾çš„ä¸‹ä¸€çŠ¶æ€
-//å°†è¯¥çŠ¶æ€æ±‚é—­åŒ…ï¼Œè¿”å›è¯¥çŠ¶æ€
+//ÊäÈëÒ»×é½Úµã£¬¸ø¶¨Ò»¸öÊäÈëinput£¨À´×Ôcharset£©,Çó¾­¹ı¸Ãinputµ½´ïµÄÏÂÒ»×´Ì¬
+//½«¸Ã×´Ì¬Çó±Õ°ü£¬·µ»Ø¸Ã×´Ì¬
 set<Node> FA::move(char input,set<Node> node,FA nfa) {
 //    cout<<input<<endl;
     set<Node> n;
 //    cout<<"[ ";
-    //éå†çŠ¶æ€ä¸­çš„æ‰€æœ‰å…ƒç´ ï¼Œè¾“å…¥ç»™å®šçš„å­—ç¬¦ï¼Œå°†ç»“æœæ·»åŠ è¿›æ–°çŠ¶æ€
+    //±éÀú×´Ì¬ÖĞµÄËùÓĞÔªËØ£¬ÊäÈë¸ø¶¨µÄ×Ö·û£¬½«½á¹ûÌí¼Ó½øĞÂ×´Ì¬
     for (auto it = node.begin(); it != node.end(); ++it) {
         addAllElements(n,transNFA[*it][input]);
     }
@@ -21,15 +21,15 @@ set<Node> FA::move(char input,set<Node> node,FA nfa) {
     return n;
 }
 
-//æ„é€ è¾“å…¥å†…å®¹ä¸ºNFA
+//¹¹ÔìÊäÈëÄÚÈİÎªNFA
 void FA::GrammarToNFA(string path){
     string line;
     ifstream file(path);
     if(!file){
-        cout<<"æ‰¾ä¸åˆ°æ–‡æ³•æ–‡ä»¶ï¼"<<endl;
+        cout<<"ÕÒ²»µ½ÎÄ·¨ÎÄ¼ş£¡"<<endl;
         return ;
     }
-    //è¯»å–ç¬¬ä¸€è¡Œå­˜åœ¨lineä¸­
+    //¶ÁÈ¡µÚÒ»ĞĞ´æÔÚlineÖĞ
     do {
         getline(file,line);
         line = trim(line);
@@ -37,14 +37,14 @@ void FA::GrammarToNFA(string path){
     int i = 0;
     while (i < line.length() && line[i] != ' ' && line[i] != '-')
         i++;
-    //åˆæ€
+    //³õÌ¬
     string start = line.substr(0,i);
-    //åŠ å…¥åˆæ€
+    //¼ÓÈë³õÌ¬
     insertIntoStartState(start);
     do{
-        //å»é™¤å‰é¢çš„ç©ºæ ¼
+        //È¥³ıÇ°ÃæµÄ¿Õ¸ñ
         line = trim(line);
-        //è·³è¿‡æ³¨é‡Š(ç¬¬ä¸€è¡Œä¸èƒ½ç”¨)
+        //Ìø¹ı×¢ÊÍ(µÚÒ»ĞĞ²»ÄÜÓÃ)
         if(line[0] == '/' && line[1] == '/'){
             line.clear();
             getline(file,line);
@@ -52,7 +52,7 @@ void FA::GrammarToNFA(string path){
             continue;
         }
 
-        //æ²¡æœ‰'|'ï¼Œè¯´æ˜æ˜¯å•æ¡äº§ç”Ÿå¼ï¼Œç›´æ¥å¤„ç†
+        //Ã»ÓĞ'|'£¬ËµÃ÷ÊÇµ¥Ìõ²úÉúÊ½£¬Ö±½Ó´¦Àí
         if (line.find('|') == string::npos){
             size_t p2 = line.find("->");
             string h = trim(line.substr(0,p2));
@@ -61,9 +61,9 @@ void FA::GrammarToNFA(string path){
             deal(h +" -> "+ line);
         }else{
             size_t p = line.find("->");
-            //æ²¡æ‰¾åˆ°ï¼Œäº§ç”Ÿå¼é”™è¯¯
+            //Ã»ÕÒµ½£¬²úÉúÊ½´íÎó
             if (p == string::npos){
-                cout<<"è¾“å…¥çš„è¯­æ³•æœ‰è¯¯ï¼"<<endl;
+                cout<<"ÊäÈëµÄÓï·¨ÓĞÎó£¡"<<endl;
                 return;
             }
             string h = trim(line.substr(0,p));
@@ -75,29 +75,29 @@ void FA::GrammarToNFA(string path){
                 deal(h+" -> "+trim(production));
             }
         }
-        //å¤„ç†å®Œæˆï¼Œæ¸…ç©ºå­—ç¬¦ä¸²
+        //´¦ÀíÍê³É£¬Çå¿Õ×Ö·û´®
         line.clear();
         getline(file,line);
     }while(!line.empty());
     file.close();
 }
 
-//å¤„ç†å•æ¡äº§ç”Ÿå¼ï¼Œå·²å»é™¤ç©ºæ ¼
-//å¦‚S -> aA
+//´¦Àíµ¥Ìõ²úÉúÊ½£¬ÒÑÈ¥³ı¿Õ¸ñ
+//ÈçS -> aA
 void FA::deal(string line){
     istringstream iss(line);
 //    cout<<iss.str()<<endl;
-    string ls, arrow, rs; //ls:å·¦è¾¹    arrowï¼šç®­å¤´    rsï¼šå³è¾¹
+    string ls, arrow, rs; //ls:×ó±ß    arrow£º¼ıÍ·    rs£ºÓÒ±ß
     char input;
-    //æ ¹æ®ç©ºæ ¼åˆ‡åˆ†
+    //¸ù¾İ¿Õ¸ñÇĞ·Ö
     iss >> ls >> arrow >> rs;
 //    cout<<ls<<" "<<arrow<<" "<<rs<<endl;
     Node node = insertIntoState(ls);
-    //å¦‚æœæ˜¯å¤§å†™å­—æ¯å¼€å¤´ï¼Œè¾“å…¥ä¸º?ï¼ˆç©ºï¼‰
+    //Èç¹ûÊÇ´óĞ´×ÖÄ¸¿ªÍ·£¬ÊäÈëÎª?£¨¿Õ£©
     if (isupper(rs[0])){
         input = '$';
     }else if (rs[0] == '\\'){
-        //'\'å¼€å¤´è¡¨ç¤ºè½¬ä¹‰å­—ç¬¦ï¼Œå•ç‹¬å¤„ç†
+        //'\'¿ªÍ·±íÊ¾×ªÒå×Ö·û£¬µ¥¶À´¦Àí
         switch (rs[1]) {
             case '0':
                 input = ' ';
@@ -112,43 +112,43 @@ void FA::deal(string line){
                 input = '$';
         }
         rs = rs.substr(2);
-        //æ˜¯ç»ˆæ€ï¼Œè®°å½•å·¦è¾¹
+        //ÊÇÖÕÌ¬£¬¼ÇÂ¼×ó±ß
         if (rs.empty()){
             string ss = "";
-            //æ ‡è¯†ç¬¦å’Œå…³é”®å­—
+            //±êÊ¶·ûºÍ¹Ø¼ü×Ö
             if (startsWith("I",ls)){
                 ss = "_I";
             }else if (startsWith("O",ls)){
-                //è¿ç®—ç¬¦
+                //ÔËËã·û
                 ss = "_O";
             }else if (startsWith("Separator",ls)){
                 //Separator
                 ss = "_S";
             }else if (startsWith("A",ls) || startsWith("B",ls) || startsWith("C",ls) || startsWith("D",ls)){
-                //å¸¸é‡
+                //³£Á¿
                 ss = "_C";
             }
             rs = "EndState_"+to_string(endState.size()+1) + ss;
             insertIntoEndState(rs);
         }
     }else{
-        //æ­£å¸¸çš„è¾“å…¥
+        //Õı³£µÄÊäÈë
         input = rs[0];
-        //å»æ‰ç¬¬ä¸€ä½ï¼Œå‰©ä¸‹çš„æ˜¯ä¸‹ä¸€çŠ¶æ€
+        //È¥µôµÚÒ»Î»£¬Ê£ÏÂµÄÊÇÏÂÒ»×´Ì¬
         rs = rs.substr(1);
         if (rs.empty()){
             string ss = "";
-            //æ ‡è¯†ç¬¦å’Œå…³é”®å­—
+            //±êÊ¶·ûºÍ¹Ø¼ü×Ö
             if (startsWith("I",ls)){
                 ss = "_I";
             }else if (startsWith("O",ls)){
-                //è¿ç®—ç¬¦
+                //ÔËËã·û
                 ss = "_O";
             }else if (startsWith("Separator",ls)){
                 //Separator
                 ss = "_S";
             }else if (startsWith("A",ls) || startsWith("B",ls) || startsWith("C",ls) || startsWith("D",ls)){
-                //å¸¸é‡
+                //³£Á¿
                 ss = "_C";
             }
             rs = "EndState_"+to_string(endState.size()+1)+ss;
@@ -161,7 +161,7 @@ void FA::deal(string line){
     transNFA[node][input].insert(insertIntoState(rs));
 }
 
-//å°†NFAè½¬æ¢ä¸ºDFA
+//½«NFA×ª»»ÎªDFA
 void FA::TransToDFA(FA nfa){
     set<Node> n = nfa.closure(nfa.startState);
 //    for (set<Node>::iterator it2 = n.begin(); it2 != n.end(); ++it2) {
@@ -174,19 +174,19 @@ void FA::TransToDFA(FA nfa){
     deal2(nfa,start,n);
 }
 
-//å¤„ç†æ•°æ®ï¼Œå¤„ç†å®Œå¾—åˆ°DFA
+//´¦ÀíÊı¾İ£¬´¦ÀíÍêµÃµ½DFA
 void FA::deal2(FA nfa, Node start,set<Node> n) {
-    //éå†charSet
+    //±éÀúcharSet
     for (set<char>::iterator it2 = charSet.begin(); it2 != charSet.end(); ++it2) {
         int flag = 0, flag2 = 0,flag3 = 1;
-        // å–å¾—ä¸‹ä¸€çŠ¶æ€çš„é›†åˆï¼ˆå·²åšé—­åŒ…ï¼‰
+        // È¡µÃÏÂÒ»×´Ì¬µÄ¼¯ºÏ£¨ÒÑ×ö±Õ°ü£©
         set<Node> n2 = nfa.move(*it2,n,nfa);
         string buf;
         string ss = "";
-        //flag3 = 0,è¯´æ˜æ²¡æœ‰ä¸‹ä¸€çŠ¶æ€
+        //flag3 = 0,ËµÃ÷Ã»ÓĞÏÂÒ»×´Ì¬
         if(n2.empty())
             flag3 = 0;
-        //å¦‚æœåŒ…å«çš„èŠ‚ç‚¹ä¸­æœ‰ç»ˆæ€ï¼Œæ ‡è®°
+        //Èç¹û°üº¬µÄ½ÚµãÖĞÓĞÖÕÌ¬£¬±ê¼Ç
         if (nodeStartsWith(n2,"EndState")){
             flag2 = 1;
             if(hasNode(n2, "EndState", "I")){
@@ -199,13 +199,13 @@ void FA::deal2(FA nfa, Node start,set<Node> n) {
                 ss = "_C";
             }
         }
-        //æ£€æŸ¥è¯¥çŠ¶æ€æ˜¯å¦å­˜åœ¨
+        //¼ì²é¸Ã×´Ì¬ÊÇ·ñ´æÔÚ
         for (auto it4 = stateCorr.begin(); it4 != stateCorr.end(); ++it4) {
-//            //å¦‚æœåŒ…å«çš„èŠ‚ç‚¹ä¸­æœ‰ç»ˆæ€ï¼Œæ ‡è®°
+//            //Èç¹û°üº¬µÄ½ÚµãÖĞÓĞÖÕÌ¬£¬±ê¼Ç
 //            if (nodeStartsWith(it4->second,"EndState")){
 //                flag2 = 1;
 //            }
-            //å¦‚æœæ–°çŠ¶æ€å·²ç»å­˜åœ¨ï¼Œè·³è¿‡
+            //Èç¹ûĞÂ×´Ì¬ÒÑ¾­´æÔÚ£¬Ìø¹ı
             if (setsAreEqual(it4->second,n2)) {
                 buf = it4->first;
                 flag = 1;
@@ -213,11 +213,11 @@ void FA::deal2(FA nfa, Node start,set<Node> n) {
             }
         }
         if(flag3) {
-            //flag == 0,è¯´æ˜çŠ¶æ€ä¸å­˜åœ¨ï¼Œæ­¤æ—¶æ–°å¢æ–°èŠ‚ç‚¹ï¼Œå¹¶å¯¹æ–°èŠ‚ç‚¹è¿›è¡Œå¤„ç†
+            //flag == 0,ËµÃ÷×´Ì¬²»´æÔÚ£¬´ËÊ±ĞÂÔöĞÂ½Úµã£¬²¢¶ÔĞÂ½Úµã½øĞĞ´¦Àí
             Node newN;
             string name = "State" + to_string(States.size() + 1);
             if (!flag) {
-                //flag2 == 1,è¯´æ˜è¯¥çŠ¶æ€ä¸ºç»ˆæ€ï¼Œéœ€è¦æ·»åŠ è¿›ç»ˆæ€é›†
+                //flag2 == 1,ËµÃ÷¸Ã×´Ì¬ÎªÖÕÌ¬£¬ĞèÒªÌí¼Ó½øÖÕÌ¬¼¯
                 if (flag2) {
                     name = "EndState" + to_string(endState.size() + 1) + ss;
                     newN = insertIntoEndState(name);
@@ -226,12 +226,12 @@ void FA::deal2(FA nfa, Node start,set<Node> n) {
                 stateCorr[name] = n2;
                 deal2(nfa, newN, n2);
             } else {
-                //çŠ¶æ€å­˜åœ¨ï¼ŒåŠ å…¥å¯¹åº”å…³ç³»
+                //×´Ì¬´æÔÚ£¬¼ÓÈë¶ÔÓ¦¹ØÏµ
                 newN = insertIntoState(buf);
             }
             transDFA[start][*it2] = newN;
         }
-        //å¤„ç†å®Œæˆï¼Œç¨‹åºç»“æŸ
+        //´¦ÀíÍê³É£¬³ÌĞò½áÊø
     }
 }
 
@@ -264,13 +264,13 @@ void FA::printDFA() {
 
 void FA::printCharSet() {
     for (set<char>::iterator it = charSet.begin(); it != charSet.end(); ++it) {
-        cout << *it << " "; // æ‰“å°setä¸­çš„å€¼
+        cout << *it << " "; // ´òÓ¡setÖĞµÄÖµ
     }
 
 }
 
 Node FA::insertIntoStartState(string name) {
-    // ä½¿ç”¨è¿­ä»£å™¨éå† startState
+    // Ê¹ÓÃµü´úÆ÷±éÀú startState
     if (startState.name.empty()) {
         startState.name = name;
         startState.id = 1;
@@ -283,9 +283,9 @@ Node FA::insertIntoStartState(string name) {
 Node FA::insertIntoEndState(string name) {
     int flag = 0;
     Node node;
-    // ä½¿ç”¨è¿­ä»£å™¨éå† startState
+    // Ê¹ÓÃµü´úÆ÷±éÀú startState
     for (auto it = endState.begin(); it != endState.end(); ++it) {
-        //å·²æœ‰è¯¥çŠ¶æ€ï¼Œåˆ™ä¸æ’å…¥
+        //ÒÑÓĞ¸Ã×´Ì¬£¬Ôò²»²åÈë
         if (it->name == name) {
             flag = 1;
             node.name = it->name;
@@ -293,7 +293,7 @@ Node FA::insertIntoEndState(string name) {
             break;
         }
     }
-    //æ‰¾ä¸åˆ°çŠ¶æ€,æ–°å¢è¯¥çŠ¶æ€
+    //ÕÒ²»µ½×´Ì¬,ĞÂÔö¸Ã×´Ì¬
     if (!flag){
         node = {++count,name};
         endState.insert(node);
@@ -305,9 +305,9 @@ Node FA::insertIntoEndState(string name) {
 Node FA::insertIntoState(string name) {
     int flag = 0;
     Node node;
-    // ä½¿ç”¨è¿­ä»£å™¨éå† startState
+    // Ê¹ÓÃµü´úÆ÷±éÀú startState
     for (auto it = States.begin(); it != States.end(); ++it) {
-        //å·²æœ‰è¯¥çŠ¶æ€ï¼Œåˆ™ä¸æ’å…¥
+        //ÒÑÓĞ¸Ã×´Ì¬£¬Ôò²»²åÈë
         if (it->name == name) {
             flag = 1;
             node.name = it->name;
@@ -315,7 +315,7 @@ Node FA::insertIntoState(string name) {
             break;
         }
     }
-    //æ‰¾ä¸åˆ°çŠ¶æ€,æ–°å¢è¯¥çŠ¶æ€
+    //ÕÒ²»µ½×´Ì¬,ĞÂÔö¸Ã×´Ì¬
     if (!flag){
         node = {++count,name};
         States.insert(node);
@@ -323,7 +323,7 @@ Node FA::insertIntoState(string name) {
     return node;
 }
 
-//æ±‚è¾“å…¥èŠ‚ç‚¹çš„Îµ-é—­åŒ…
+//ÇóÊäÈë½ÚµãµÄ¦Å-±Õ°ü
 set<Node> FA::closure(const Node& node) {
     set<Node> result;
     stack<Node> stack;
@@ -334,7 +334,7 @@ set<Node> FA::closure(const Node& node) {
         stack.pop();
 
         if (transNFA.count(current) > 0 && transNFA[current].count('$') > 0) {
-            // éå†å½“å‰èŠ‚ç‚¹çš„æ‰€æœ‰Îµè½¬ç§»
+            // ±éÀúµ±Ç°½ÚµãµÄËùÓĞ¦Å×ªÒÆ
             for (Node next : transNFA[current]['$']) {
                 if (result.count(next) == 0) {
                     result.insert(next);
@@ -438,7 +438,7 @@ set<string> readWordsFromFile(string path) {
     ifstream file(path);
     string word;
     if (!file){
-        cout<<"æ‰¾ä¸åˆ°å…³é”®å­—æ–‡ä»¶ï¼"<<endl;
+        cout<<"ÕÒ²»µ½¹Ø¼ü×ÖÎÄ¼ş£¡"<<endl;
         return words;
     }
     while (getline(file,word)) {
@@ -456,7 +456,7 @@ void addVector(vector<T>& v1, vector<T>& v2) {
 void printTokens(vector<Token> tokens) {
     ofstream  out(TOKEN_PATH);
     if (!out.is_open()){
-        cout<<"æ‰“å¼€Tokenæ–‡ä»¶å¤±è´¥ï¼"<<endl;
+        cout<<"´ò¿ªTokenÎÄ¼şÊ§°Ü£¡"<<endl;
         return;
     }
     cout << left << setw(20) << "line";
@@ -509,50 +509,76 @@ bool Token::operator<(const Token &o) const {
     return value.compare(o.value);
 }
 
-//å•è¡Œè¯æ³•åˆ†æ
+//µ¥ĞĞ´Ê·¨·ÖÎö
 vector<Token> LAbyLine(FA dfa, string line, int n) {
     vector<Token> t;
     string l = trim(line);
-    //ç¼“å†²åŒºï¼Œä¿å­˜è¾“å…¥çš„å­—ç¬¦
+    //»º³åÇø£¬±£´æÊäÈëµÄ×Ö·û
     string buf = "";
-    //å½“å‰çŠ¶æ€ä¸ºåˆæ€
+    //µ±Ç°×´Ì¬Îª³õÌ¬
     Node state = dfa.getStartState();
     map<Node,map<char,Node>> transDFA = dfa.getTransDfa();
     set<Node> e = dfa.getEndState();
     int i = 0;
-    //éå†è¡Œ
+    Token ttt;
+    //±éÀúĞĞ
     while ( i < l.length() ){
-//        if (l[i] == ' '){
-//            if (++i < l.length()){
-//                continue;
-//            }
-//            break;
-//        }
         state = transDFA[state][l[i]];
-        //æ‰¾ä¸åˆ°ä¸‹ä¸€çŠ¶æ€
+//        if (l=="float b = 1.145e+14.1;"){
+//            int iii = 0;
+//        }
+        //ÕÒ²»µ½ÏÂÒ»×´Ì¬
         if (state.id == 0){
-            cout<<"ç¨‹åºé”™è¯¯ï¼æœªçŸ¥é”™è¯¯åœ¨ç¬¬ "<< n <<" è¡Œ"<<endl;
+//            cout << buf << endl;
+//            cout<<"³ÌĞò´íÎó£¡ÔÚµÚ "<< n <<" ĞĞ"<<endl;
+            vector<Token> v;
+            string ssssss = "";
+            ssssss+=l[i];
+            //ÊÇ³£Á¿£¬ÓĞe£¬ËµÃ÷ÊÇ¿ÆÑ§¼ÆÊı·¨£¬·µ»ØĞÅÏ¢ÌáÊ¾´íÎó
+            if (ttt.type == CONSTANT && !(ttt.value.find('e') == string::npos && ttt.value.find('E') == string::npos)){
+                //1Îª´íÎóÂë
+                v.push_back({ERROR,ssssss,1});
+                v.push_back(ttt);
+            } else if (ttt.type == CONSTANT && isdigit(ttt.value[0])){
+                v.push_back({ERROR,ssssss,2});
+                v.push_back(ttt);
+            } else {
+                v.push_back({ERROR,ssssss,9});
+                v.push_back(ttt);
+            }
+
+            return v;
         }
         buf += l[i];
-        //å¦‚æœç»ˆæ€é›†ä¸­æ‰¾ä¸åˆ°stateï¼Œè¯´æ˜ä¸æ˜¯ç»ˆæ€
-        //æ­¤æ—¶å¿…é¡»ç»§ç»­è¯»å–ä¸‹ä¸€ä¸ªå­—ç¬¦
+        //Èç¹ûÖÕÌ¬¼¯ÖĞÕÒ²»µ½state£¬ËµÃ÷²»ÊÇÖÕÌ¬
+        //´ËÊ±±ØĞë¼ÌĞø¶ÁÈ¡ÏÂÒ»¸ö×Ö·û
         if(e.find(state) == e.end()){
             i++;
             continue;
         }else{
-            //åŒ…å«ç»ˆæ€ï¼Œçœ‹ä¸‹ä¸€ä¸ªå­—ç¬¦èƒ½å¦è¢«æ¥å—ï¼Œå¦‚æœä¸èƒ½è¢«æ¥æ”¶ï¼Œåˆ›å»ºTokenï¼Œè¯»å–ä¸‹ä¸€ä¸ªè¯
+            if ((isdigit(buf[0]) && isalpha(l[i])) || isdigit(ttt.value[0]) && isalpha(l[i])){
+                if (!(l[i] == 'i' || l[i] == 'e' || l[i] == 'E')){
+                    vector<Token> v;
+                    string ssssss = "";
+                    ssssss+=l[i];
+                    v.push_back({ERROR,ssssss,2});
+                    v.push_back(ttt);
+                    return v;
+                }
+            }
+            //°üº¬ÖÕÌ¬£¬¿´ÏÂÒ»¸ö×Ö·ûÄÜ·ñ±»½ÓÊÜ£¬Èç¹û²»ÄÜ±»½ÓÊÕ£¬´´½¨Token£¬¶ÁÈ¡ÏÂÒ»¸ö´Ê
             if(transDFA[state][l[i+1]].id == 0){
                 Token token;
                 if (isNodeNameEndsWith(state, "I")) {
-                    //æ ‡è¯†ç¬¦å’Œå…³é”®å­—ï¼Œéå†å…³é”®å­—é›†åˆï¼Œåˆ¤æ–­æ˜¯å¦æ˜¯å…³é”®å­—
+                    //±êÊ¶·ûºÍ¹Ø¼ü×Ö£¬±éÀú¹Ø¼ü×Ö¼¯ºÏ£¬ÅĞ¶ÏÊÇ·ñÊÇ¹Ø¼ü×Ö
                     set<string> keyword = readWordsFromFile(KEYWORD_PATH);
-                    //æ˜¯å…³é”®å­—
+                    //ÊÇ¹Ø¼ü×Ö
                     if (keyword.find(buf) != keyword.end()) {
                         token.type = KEYWORD;
                     } else{
                         token.type = IDENTIFIER;
                         if (isdigit(buf[0])){
-                            cout << "ç¨‹åºé”™è¯¯ï¼åœ¨ç¬¬ " << n << "è¡Œå‘ç°äº†ä¸åˆæ³•çš„æ ‡è¯†ç¬¦ï¼š" << buf << endl;
+                            cout << "³ÌĞò´íÎó£¡ÔÚµÚ " << n << "ĞĞ·¢ÏÖÁË²»ºÏ·¨µÄ±êÊ¶·û£º" << buf << endl;
                         }
                     }
                 } else if (isNodeNameEndsWith(state, "O")) {
@@ -562,7 +588,7 @@ vector<Token> LAbyLine(FA dfa, string line, int n) {
                 } else if (isNodeNameEndsWith(state, "C")) {
                     token.type = CONSTANT;
                 }
-                //åˆ°è¾¾æ¥å—æ€,è¯è¯­è¢«æ¥å—ï¼Œå­˜å…¥Token
+                //µ½´ï½ÓÊÜÌ¬,´ÊÓï±»½ÓÊÜ£¬´æÈëToken
 //            token.type = ;
                 token.line = n;
                 token.value = buf;
@@ -570,12 +596,13 @@ vector<Token> LAbyLine(FA dfa, string line, int n) {
                 t.push_back(token);
                 i++;
                 state = dfa.getStartState();
+                ttt = token;
                 if (i < l.length())
                     continue;
                 break;
             }
             else{
-                //ä¸‹ä¸€ä¸ªinputèƒ½è¢«æ¥å—
+                //ÏÂÒ»¸öinputÄÜ±»½ÓÊÜ
                 i++;
                 continue;
             }
@@ -584,23 +611,55 @@ vector<Token> LAbyLine(FA dfa, string line, int n) {
     return t;
 }
 
-//è¯æ³•åˆ†æ
-//ä¼ å…¥dfaä¸æ–‡ä»¶è·¯å¾„ï¼Œå¯¹å…¶è¿›è¡Œè¯æ³•åˆ†æï¼Œåˆ‡åˆ†å¾—åˆ°Tokené›†
-vector<Token> LexicalAnalyze(FA dfa, string path) {
+//´Ê·¨·ÖÎö
+//´«ÈëdfaÓëÎÄ¼şÂ·¾¶£¬¶ÔÆä½øĞĞ´Ê·¨·ÖÎö£¬ÇĞ·ÖµÃµ½Token¼¯
+int LexicalAnalyze(FA dfa, string path) {
     vector<Token> tokens;
     string line;
     int n = 0;
     ifstream file(path);
     if (!file){
-        cout << "æ‰¾ä¸åˆ°æºä»£ç æ–‡ä»¶ï¼" << endl;
-        return tokens;
+        cout << "ÕÒ²»µ½Ô´´úÂëÎÄ¼ş£¡" << endl;
+        return 0;
     }
-    //ä»fileä¸­è·å–ä¸€è¡Œï¼Œä¿å­˜åœ¨lineä¸­
+    //´ÓfileÖĞ»ñÈ¡Ò»ĞĞ£¬±£´æÔÚlineÖĞ
     while(getline(file,line)){
         n++;
+        line = trim(line);
+        //¿ªÍ·¾ÍÊÇ×¢ÊÍ£¬Ìø¹ı
+        if (line[0] == '/' && line[1] == '/'){
+//            n++;
+            continue;
+        }
+        //½áÎ²ÓĞ×¢ÊÍ£¬È¥³ıºóÃæµÄ×¢ÊÍ
+        if (line.find("//") != string::npos){
+            line = line.substr(0, line.find("//"));
+        }
         vector<Token> to = LAbyLine(dfa, line, n);
+        //±¨´í
+        if (to[0].type == ERROR){
+            cout<<"´íÎó£¡ÔÚµÚ "<< n <<" ĞĞ"<<endl;
+            cout<<to[1].value<<to[0].value<<endl;
+            for (int i = 0; i < to[1].value.length(); ++i) {
+                cout<<" ";
+            }
+            cout<<"^"<<endl;
+            switch (to[0].line) {
+                case 1:
+                    cout<<"¿ÆÑ§¼ÆÊı·¨´íÎó"<<endl;
+                    break;
+                case 2:
+                    cout<<"±êÊ¶·û´íÎó£¡"<<endl;
+                    break;
+                default:
+                    cout<<"ÊäÈë×Ö·û '"<<to[0].value<<"' ÔÚ´Ë´¦²»ºÏ·¨£¡"<<endl;
+            }
+            return 0;
+        }
         tokens.insert(tokens.end(),to.begin(),to.end());
     }
     file.close();
-    return tokens;
+    cout<<"´Ê·¨·ÖÎö½á¹û£º"<<endl;
+    printTokens(tokens);
+    return 1;
 }

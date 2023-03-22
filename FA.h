@@ -29,7 +29,8 @@ enum TokenType {
     IDENTIFIER,         //标识符，一般的单词，字母或下划线开头
     CONSTANT,           //常量，数字，比如29+52i（虚数）、1.14（小数）、514（整数）
     DELIMITER,          //界符，比如{}、（）、""、''、[]、<>
-    OPERATOR            //运算符，比如”+“、”-“、”*“、”/“、”+=“
+    OPERATOR,           //运算符，比如”+“、”-“、”*“、”/“、”+=“
+    ERROR               //单独的错误信息标识
 };
 
 // Token结构体
@@ -115,6 +116,6 @@ public:
 };
 
 
-vector<Token> LexicalAnalyze(FA dfa,string path);
+int LexicalAnalyze(FA dfa,string path);
 
 vector<Token> LAbyLine(FA dfa, string line, int n);

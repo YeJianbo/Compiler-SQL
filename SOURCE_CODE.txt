@@ -1,20 +1,25 @@
+//
 using namespace std;
 void func(){}
 void aaa();
+//不同意的请举手
 int main(){
     int i = 2952;
-    float a = 89.64;
+    float a = 89.64;//疯狂的和顾客顾客
     float b = 1.145e+14;
-    complex d = 89+64i;
-    double c = a + b;
+    complex d = 89+64i;//没有
+    double c = a + b;//没有
     int y = 0;
     do{
         if(i == 2952){
             y += x;
             i -= 1;
+            //没有
         }else{
             y -= x;
         }
     }while(x < i);
     return 0;
+//通过！
 }
+//
