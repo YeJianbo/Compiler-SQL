@@ -1,25 +1,26 @@
 a include
 b begin
 c const
-d 常量
+d Constant
 e else
 f do
-g 数据类型
+g type
 h end
 i if
 j iostream
-k 一般关键字
+k keyword
 l namespace
 m */
 n for
-o break或continue
+o break or continue
 p +-
 q return
-r 双目运算符
+r binary
 s std
-t 标识符
+t identifier
 u using
 v then
 w while
-x 类与结构体
-y 组合赋值运算
+x class
+y Composite assignment operator
+$ $

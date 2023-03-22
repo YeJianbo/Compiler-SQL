@@ -419,7 +419,7 @@ void LR::printItemSet() {
         for (const auto& item : i.items){
             auto ii = item;
             ii.rule.r.insert(item.dot,".");
-            cout<<item.rule.l<<" -> "<<ii.rule.r<<", lookahead: {";
+            cout<<item.rule.l<<" -> "<<ii.rule.r<<", lookahead: { ";
             for(const auto& l:item.lookahead){
                 cout<<l<<" ";
             }
@@ -459,6 +459,7 @@ void LR::printProduction() {
 //输入Token的路径path，读取Token表，对该Token进行语法分析，
 //如果通过编译，输出"YES"，否则输出"NO"
 void LR::parse(string path) {
+
     //记录处理次数，用于输出处理过程
     int n = 0;
     //读取Token至Token集合, 并将Token表转换为可接受的符号串
@@ -528,8 +529,8 @@ void LR::parse(string path) {
         //如果名称空，说明不存在下一状态，此时输出提醒，终止分析
         if (next.name.empty()){
             //取ts[i]所在Token的行数，一并输出
-            auto token = tokenLine[i];
-            cout << "错误：输入字符【"<<ts[i]<<"】，找不到下一状态！行数："<<token.line<<endl;
+            auto token = tokenLine[i-1];
+            cout << "错误：输入字符【"<<dic2[ts[i]]<<"】，找不到下一状态！行数："<<token.line<<endl;
             //输出上一个字符对应的展望符
             //遍历ACTION/GOTO表，输出有内容的字符
             cout << "期望的输入：";
@@ -666,7 +667,7 @@ void LR::readDic(string path1, string path2) {
     }
     getline(file2,line2);
     //从file中获取一行，保存在line中，逐行处理，存入dic
-    while(!line.empty()){
+    while(!line2.empty()){
         //跳过注释
         line2 = trim(line2);
         if (line2[0] == '/' && line2[1] == '/'){

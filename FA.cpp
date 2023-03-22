@@ -3,26 +3,20 @@
 
 //输入一组节点，给定一个输入input（来自charset）,求经过该input到达的下一状态
 //将该状态求闭包，返回该状态
-set<Node> FA::move(char input,set<Node> node,FA nfa) {
-//    cout<<input<<endl;
+set<Node> FA::move(char input,const set<Node>& node,FA nfa) {
     set<Node> n;
-//    cout<<"[ ";
     //遍历状态中的所有元素，输入给定的字符，将结果添加进新状态
-    for (auto it = node.begin(); it != node.end(); ++it) {
-        addAllElements(n,transNFA[*it][input]);
+    for (const auto & it : node) {
+        addAllElements(n,transNFA[it][input]);
     }
-    for (auto it__ = n.begin(); it__ != n.end(); ++it__) {
-        addAllElements(n,nfa.closure(*it__));
+    for (const auto & _it : n) {
+        addAllElements(n,nfa.closure(_it));
     }
-    for (auto it2 = n.begin(); it2 != n.end(); ++it2) {
-//        cout<<it2->id<<" "<<it2->name<<" ";
-    }
-//    cout<<"]"<<endl;
     return n;
 }
 
 //构造输入内容为NFA
-void FA::GrammarToNFA(string path){
+void FA::GrammarToNFA(const string& path){
     string line;
     ifstream file(path);
     if(!file){
@@ -57,7 +51,6 @@ void FA::GrammarToNFA(string path){
             size_t p2 = line.find("->");
             string h = trim(line.substr(0,p2));
             line = trim(line.substr(p2+2));
-//            cout<<line;
             deal(h +" -> "+ line);
         }else{
             size_t p = line.find("->");
@@ -68,7 +61,6 @@ void FA::GrammarToNFA(string path){
             }
             string h = trim(line.substr(0,p));
             line = trim(line.substr(p+2));
-//            cout<<line;
             stringstream ss(line);
             string production;
             while (getline(ss, production, '|')) {
@@ -84,14 +76,12 @@ void FA::GrammarToNFA(string path){
 
 //处理单条产生式，已去除空格
 //如S -> aA
-void FA::deal(string line){
+void FA::deal(const string& line){
     istringstream iss(line);
-//    cout<<iss.str()<<endl;
     string ls, arrow, rs; //ls:左边    arrow：箭头    rs：右边
     char input;
     //根据空格切分
     iss >> ls >> arrow >> rs;
-//    cout<<ls<<" "<<arrow<<" "<<rs<<endl;
     Node node = insertIntoState(ls);
     //如果是大写字母开头，输入为?（空）
     if (isupper(rs[0])){
@@ -114,7 +104,7 @@ void FA::deal(string line){
         rs = rs.substr(2);
         //是终态，记录左边
         if (rs.empty()){
-            string ss = "";
+            string ss;
             //标识符和关键字
             if (startsWith("I",ls)){
                 ss = "_I";
@@ -137,7 +127,7 @@ void FA::deal(string line){
         //去掉第一位，剩下的是下一状态
         rs = rs.substr(1);
         if (rs.empty()){
-            string ss = "";
+            string ss;
             //标识符和关键字
             if (startsWith("I",ls)){
                 ss = "_I";
@@ -155,18 +145,13 @@ void FA::deal(string line){
             insertIntoEndState(rs);
         }
     }
-//    cout<<input<<endl;
     charSet.insert(input);
-//    cout<<insertIntoState(rs).id<<" "<<rs<<endl;
     transNFA[node][input].insert(insertIntoState(rs));
 }
 
 //将NFA转换为DFA
 void FA::TransToDFA(FA nfa){
     set<Node> n = nfa.closure(nfa.startState);
-//    for (set<Node>::iterator it2 = n.begin(); it2 != n.end(); ++it2) {
-//        cout<<it2->id<<" "<<it2->name<<endl;
-//    }
     Node start = insertIntoStartState("Start");
     stateCorr["Start"] = n;
     charSet = nfa.getCharSet();
@@ -175,14 +160,14 @@ void FA::TransToDFA(FA nfa){
 }
 
 //处理数据，处理完得到DFA
-void FA::deal2(FA nfa, Node start,set<Node> n) {
+void FA::deal2(FA nfa, const Node& start,const set<Node>& n) {
     //遍历charSet
-    for (set<char>::iterator it2 = charSet.begin(); it2 != charSet.end(); ++it2) {
+    for (char it2 : charSet) {
         int flag = 0, flag2 = 0,flag3 = 1;
         // 取得下一状态的集合（已做闭包）
-        set<Node> n2 = nfa.move(*it2,n,nfa);
+        set<Node> n2 = nfa.move(it2,n,nfa);
         string buf;
-        string ss = "";
+        string ss;
         //flag3 = 0,说明没有下一状态
         if(n2.empty())
             flag3 = 0;
@@ -200,14 +185,14 @@ void FA::deal2(FA nfa, Node start,set<Node> n) {
             }
         }
         //检查该状态是否存在
-        for (auto it4 = stateCorr.begin(); it4 != stateCorr.end(); ++it4) {
+        for (auto & it4 : stateCorr) {
 //            //如果包含的节点中有终态，标记
 //            if (nodeStartsWith(it4->second,"EndState")){
 //                flag2 = 1;
 //            }
             //如果新状态已经存在，跳过
-            if (setsAreEqual(it4->second,n2)) {
-                buf = it4->first;
+            if (setsAreEqual(it4.second,n2)) {
+                buf = it4.first;
                 flag = 1;
                 break;
             }
@@ -229,7 +214,7 @@ void FA::deal2(FA nfa, Node start,set<Node> n) {
                 //状态存在，加入对应关系
                 newN = insertIntoState(buf);
             }
-            transDFA[start][*it2] = newN;
+            transDFA[start][it2] = newN;
         }
         //处理完成，程序结束
     }
@@ -263,8 +248,8 @@ void FA::printDFA() {
 }
 
 void FA::printCharSet() {
-    for (set<char>::iterator it = charSet.begin(); it != charSet.end(); ++it) {
-        cout << *it << " "; // 打印set中的值
+    for (char it : charSet) {
+        cout << it << " "; // 打印set中的值
     }
 
 }
@@ -280,16 +265,16 @@ Node FA::insertIntoStartState(string name) {
     return startState;
 }
 
-Node FA::insertIntoEndState(string name) {
+Node FA::insertIntoEndState(const string& name) {
     int flag = 0;
     Node node;
     // 使用迭代器遍历 startState
-    for (auto it = endState.begin(); it != endState.end(); ++it) {
+    for (const auto & it : endState) {
         //已有该状态，则不插入
-        if (it->name == name) {
+        if (it.name == name) {
             flag = 1;
-            node.name = it->name;
-            node.id = it->id;
+            node.name = it.name;
+            node.id = it.id;
             break;
         }
     }
@@ -302,16 +287,16 @@ Node FA::insertIntoEndState(string name) {
     return node;
 }
 
-Node FA::insertIntoState(string name) {
+Node FA::insertIntoState(const string& name) {
     int flag = 0;
     Node node;
     // 使用迭代器遍历 startState
-    for (auto it = States.begin(); it != States.end(); ++it) {
+    for (const auto & State : States) {
         //已有该状态，则不插入
-        if (it->name == name) {
+        if (State.name == name) {
             flag = 1;
-            node.name = it->name;
-            node.id = it->id;
+            node.name = State.name;
+            node.id = State.id;
             break;
         }
     }
@@ -335,7 +320,7 @@ set<Node> FA::closure(const Node& node) {
 
         if (transNFA.count(current) > 0 && transNFA[current].count('$') > 0) {
             // 遍历当前节点的所有ε转移
-            for (Node next : transNFA[current]['$']) {
+            for (const Node& next : transNFA[current]['$']) {
                 if (result.count(next) == 0) {
                     result.insert(next);
                     stack.push(next);
@@ -350,10 +335,6 @@ const set<char> &FA::getCharSet() const {
     return charSet;
 }
 
-const map<Node, map<char, set<Node>>> &FA::getTransNfa() const {
-    return transNFA;
-}
-
 const map<Node, map<char, Node>> &FA::getTransDfa() const {
     return transDFA;
 }
@@ -366,7 +347,7 @@ const Node &FA::getStartState() const {
     return startState;
 }
 
-string trim(string str) {
+string trim(const string& str) {
     size_t first = str.find_first_not_of(' ');
     if (first == string::npos) {
         return "";
@@ -375,20 +356,24 @@ string trim(string str) {
     return str.substr(first, last - first + 1);
 }
 
-bool nodeStartsWith(set<Node> nodes, string prefix) {
-    for (const auto& node : nodes) {
-        if (node.name.compare(0, prefix.size(), prefix) == 0) {
-            return true;
-        }
-    }
-    return false;
+bool nodeStartsWith(const set<Node>& nodes, const string& prefix) {
+    // 用std::any_of()替换循环
+    bool contains_value = std::any_of(nodes.begin(), nodes.end(),
+                                      [prefix](const Node& node){ return node.name.compare(0, prefix.size(), prefix) ==
+                                                                         0; });
+//    for (const auto& node : nodes) {
+//        if (node.name.compare(0, prefix.size(), prefix) == 0) {
+//            return true;
+//        }
+//    }
+    return contains_value;
 }
 
-bool setsAreEqual(set<Node> s1, set<Node> s2) {
+bool setsAreEqual(const set<Node>& s1, set<Node> s2) {
     if (s1.size() != s2.size()) {
         return false;
     }
-    for (Node x : s1) {
+    for (const Node& x : s1) {
         if (s2.find(x) == s2.end()) {
             return false;
         }
@@ -398,9 +383,9 @@ bool setsAreEqual(set<Node> s1, set<Node> s2) {
 
 template<typename T>
 void addAllElements(set<T> &destSet, const set<T> &sourceSet) {
-    for (const auto& element : sourceSet)
+    for (const auto& e: sourceSet)
     {
-        destSet.insert(element);
+        destSet.insert(e);
     }
 }
 
@@ -419,13 +404,17 @@ bool startsWith(const string &prefix, const string &str) {
     return std::equal(prefix.begin(), prefix.end(), str.begin());
 }
 
-bool hasNode(set<Node>& nodes, string string1, string string2) {
-    for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-        if (it->name.substr(0, string1.length()) == string1 && it->name.substr(it->name.length() - string2.length()) == string2) {
-            return true;
-        }
-    }
-    return false;
+bool hasNode(set<Node>& nodes, const string& string1, const string& string2) {
+    // 用std::any_of()替换循环
+    bool b = std::any_of(nodes.begin(), nodes.end(), [&](const auto &node) {
+        return (node.name.substr(0, string1.length()) == string1) && (node.name.substr(node.name.length() - string2.length()) == string2);
+    });
+//    for (const auto & node : nodes) {
+//        if (node.name.substr(0, string1.length()) == string1 && node.name.substr(node.name.length() - string2.length()) == string2) {
+//            return true;
+//        }
+//    }
+    return b;
 }
 
 bool isNodeNameEndsWith(const Node& node, const string& string2) {
@@ -433,7 +422,7 @@ bool isNodeNameEndsWith(const Node& node, const string& string2) {
             node.name.compare(node.name.size() - string2.size(), string2.size(), string2) == 0);
 }
 
-set<string> readWordsFromFile(string path) {
+set<string> readWordsFromFile(const string& path) {
     set<string> words;
     ifstream file(path);
     string word;
@@ -448,11 +437,6 @@ set<string> readWordsFromFile(string path) {
     return words;
 }
 
-template <typename T>
-void addVector(vector<T>& v1, vector<T>& v2) {
-    v2.insert(v2.end(), v1.begin(), v1.end());
-}
-
 void printTokens(vector<Token> tokens) {
     ofstream  out(TOKEN_PATH);
     if (!out.is_open()){
@@ -462,10 +446,10 @@ void printTokens(vector<Token> tokens) {
     cout << left << setw(20) << "line";
     cout << left << setw(20) << "Type";
     cout << left << setw(20) << "value" << endl;
-    for (vector<Token>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
-        cout << left << setw(20) << it->line << right;
-        out << it->line <<"\t";
-        switch (it->type) {
+    for (auto & token : tokens) {
+        cout << left << setw(20) << token.line << right;
+        out << token.line <<"\t";
+        switch (token.type) {
             case 0:
                 cout << left << setw(20) << "KEYWORD";
                 out << "KEYWORD\t";
@@ -490,31 +474,27 @@ void printTokens(vector<Token> tokens) {
                 cout << left << setw(20) << "unknown";
                 out << "unknown\t";
         }
-        if (it->value == " "){
-            it->value = "\\0";
+        if (token.value == " "){
+            token.value = "\\0";
         }
-        if (it->value == "  "){
-            it->value = "\\t";
+        if (token.value == "  "){
+            token.value = "\\t";
         }
-        if (it->value == "\n"){
-            it->value = "\\n";
+        if (token.value == "\n"){
+            token.value = "\\n";
         }
-        cout << left << setw(20) << it->value << endl;
-        out << it->value << "\n";
+        cout << left << setw(20) << token.value << endl;
+        out << token.value << "\n";
     }
     out.close();
 }
 
-bool Token::operator<(const Token &o) const {
-    return value.compare(o.value);
-}
-
 //单行词法分析
-vector<Token> LAbyLine(FA dfa, string line, int n) {
+vector<Token> LAbyLine(const FA& dfa, const string& line, int n) {
     vector<Token> t;
     string l = trim(line);
     //缓冲区，保存输入的字符
-    string buf = "";
+    string buf;
     //当前状态为初态
     Node state = dfa.getStartState();
     map<Node,map<char,Node>> transDFA = dfa.getTransDfa();
@@ -529,21 +509,19 @@ vector<Token> LAbyLine(FA dfa, string line, int n) {
 //        }
         //找不到下一状态
         if (state.id == 0){
-//            cout << buf << endl;
-//            cout<<"程序错误！在第 "<< n <<" 行"<<endl;
             vector<Token> v;
-            string ssssss = "";
-            ssssss+=l[i];
+            string s;
+            s+=l[i];
             //是常量，有e，说明是科学计数法，返回信息提示错误
             if (ttt.type == CONSTANT && !(ttt.value.find('e') == string::npos && ttt.value.find('E') == string::npos)){
                 //1为错误码
-                v.push_back({ERROR,ssssss,1});
+                v.push_back({ERROR,s,1});
                 v.push_back(ttt);
             } else if (ttt.type == CONSTANT && isdigit(ttt.value[0])){
-                v.push_back({ERROR,ssssss,2});
+                v.push_back({ERROR,s,2});
                 v.push_back(ttt);
             } else {
-                v.push_back({ERROR,ssssss,9});
+                v.push_back({ERROR,s,9});
                 v.push_back(ttt);
             }
 
@@ -559,9 +537,9 @@ vector<Token> LAbyLine(FA dfa, string line, int n) {
             if ((isdigit(buf[0]) && isalpha(l[i])) || isdigit(ttt.value[0]) && isalpha(l[i])){
                 if (!(l[i] == 'i' || l[i] == 'e' || l[i] == 'E')){
                     vector<Token> v;
-                    string ssssss = "";
-                    ssssss+=l[i];
-                    v.push_back({ERROR,ssssss,2});
+                    string s;
+                    s += l[i];
+                    v.push_back({ERROR,s,2});
                     v.push_back(ttt);
                     return v;
                 }
@@ -613,7 +591,7 @@ vector<Token> LAbyLine(FA dfa, string line, int n) {
 
 //词法分析
 //传入dfa与文件路径，对其进行词法分析，切分得到Token集
-int LexicalAnalyze(FA dfa, string path) {
+int LexicalAnalyze(const FA& dfa, const string& path) {
     vector<Token> tokens;
     string line;
     int n = 0;
@@ -628,7 +606,6 @@ int LexicalAnalyze(FA dfa, string path) {
         line = trim(line);
         //开头就是注释，跳过
         if (line[0] == '/' && line[1] == '/'){
-//            n++;
             continue;
         }
         //结尾有注释，去除后面的注释

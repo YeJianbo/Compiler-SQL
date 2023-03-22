@@ -11,10 +11,6 @@
 
 using namespace std;
 
-//缓冲区
-//char str[1024];
-//string line;
-
 
 struct Node{ //节点
     int id;
@@ -22,6 +18,7 @@ struct Node{ //节点
     bool operator < (const Node &o) const;
     bool operator == (const Node &o) const;
 };
+
 
 // Token类型枚举
 enum TokenType {
@@ -33,40 +30,18 @@ enum TokenType {
     ERROR               //单独的错误信息标识
 };
 
+
 // Token结构体
 struct Token {
     TokenType type; // Token类型
     string value;   // Token值
     int line;       // 所在行数
-
-    bool operator<(const Token &o) const;
 };
 
-string trim(string str);
 
-bool nodeStartsWith(set<Node> nodes, string prefix);
-
-bool setsAreEqual(set<Node> s1, set<Node> s2);
-
-template <typename T>
-void addAllElements(std::set<T>& destSet, const std::set<T>& sourceSet);
-
-bool startsWith(const std::string& prefix, const std::string& str);
-
-bool hasNode(set<Node>& nodes, string string1, string string2);
-
-bool isNodeNameEndsWith(const Node& node, const string& string2);
-
-set<string> readWordsFromFile(string path);
-
-template <typename T>
-void addVector(vector<T>& v1, vector<T>& v2);
-
-void printTokens(vector<Token> tokens);
-
-
-class FA{   //自动机M = (K, ∑, f, S, Z)
-    Node startState;                   //初态集S
+class FA{                                   //自动机M = (K, ∑, f, S, Z)
+private:
+    Node startState;                        //初态S
     set<Node> endState;                     //终态集Z
     set<Node> States;                       //状态集K
     set<char> charSet;                      //字母表
@@ -74,48 +49,62 @@ class FA{   //自动机M = (K, ∑, f, S, Z)
     map<Node,map<char,Node>> transDFA;      //DFA状态转移fD
     int count = 0;                          //节点计数
     map<string,set<Node>> stateCorr;        //状态对应关系
-
 public:
-
+    //获取非终结符集合
     const set<char> &getCharSet() const;
-
-    const map<Node, map<char, set<Node>>> &getTransNfa() const;
-
+    //获取DFA状态转移
     const map<Node, map<char, Node>> &getTransDfa() const;
-
-    void minimizeDFA();                     //函数，用于最小化DFA
-
-    void GrammarToNFA(string path);         //函数，分析输入的语法，将其转换为NFA
-
-    void printEdge();                       //函数，输出NFA的状态转移关系
-
-    void printDFA();                        //函数，输出DFA的状态转移关系
-
-    void printCharSet();                    //函数，输出字母表中所有的字母
-
-    void deal(string line);                 //函数，分析处理一行数据
-
-    Node insertIntoStartState(string name); //函数，将一个状态加入初态集（同时加入状态集），如果存在，返回该节点
-
-    Node insertIntoEndState(string name);   //函数，将一个状态加入终态集
-
-    Node insertIntoState(string name);      //将一个状态加入状态集
-
-    set<Node> closure(const Node& node);    //求输入节点的ε-闭包
-
+    //分析输入的语法，将其转换为NFA
+    void GrammarToNFA(const string& path);
+    //输出NFA的状态转移关系
+    void printEdge();
+    //输出DFA的状态转移关系
+    void printDFA();
+    //输出字母表中所有的字母
+    void printCharSet();
+    //分析处理一行数据
+    void deal(const string& line);
+    //将一个状态加入初态集（同时加入状态集），如果存在，返回该节点
+    Node insertIntoStartState(string name);
+    //将一个状态加入终态集
+    Node insertIntoEndState(const string& name);
+    //将一个状态加入状态集
+    Node insertIntoState(const string& name);
+    //求输入节点的ε-闭包
+    set<Node> closure(const Node& node);
+    //NFA转DFA
     void TransToDFA(FA nfa);
-
-    void deal2(FA nfa,Node start, set<Node> n);
-
+    //NFA转DFA的处理
+    void deal2(FA nfa,const Node& start, const set<Node>& n);
+    //获取该自动机的初态
     const Node &getStartState() const;
-
+    //获取该自动机的终态集
     const set<Node> &getEndState() const;
-
-    set<Node> move(char input,set<Node> node,FA nfa);
-
+    //输入字符，求在传入的NFA经过该字符到达的下一状态的集合，将集合返回
+    set<Node> move(char input,const set<Node>& node,FA nfa);
 };
 
+string trim(const string& str);
 
-int LexicalAnalyze(FA dfa,string path);
+bool nodeStartsWith(const set<Node>& nodes, const string& prefix);
 
-vector<Token> LAbyLine(FA dfa, string line, int n);
+bool setsAreEqual(const set<Node>& s1, set<Node> s2);
+
+template <typename T>
+void addAllElements(std::set<T>& destSet, const std::set<T>& sourceSet);
+
+bool startsWith(const std::string& prefix, const std::string& str);
+
+bool hasNode(set<Node>& nodes, const string& string1, const string& string2);
+
+bool isNodeNameEndsWith(const Node& node, const string& string2);
+
+set<string> readWordsFromFile(const string& path);
+
+void printTokens(vector<Token> tokens);
+
+//语法分析
+int LexicalAnalyze(const FA& dfa,const string& path);
+
+//单行的语法分析
+vector<Token> LAbyLine(const FA& dfa, const string& line, int n);
