@@ -605,7 +605,7 @@ int LexicalAnalyze(const FA& dfa, const string& path) {
         n++;
         line = trim(line);
         //开头就是注释，跳过
-        if (line[0] == '/' && line[1] == '/'){
+        if ((line[0] == '/' && line[1] == '/') || line.empty()){
             continue;
         }
         //结尾有注释，去除后面的注释

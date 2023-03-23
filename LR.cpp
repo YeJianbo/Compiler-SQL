@@ -547,7 +547,7 @@ void LR::parse(string path) {
                 tokenStack.pop();
             } while (!tokenStack.empty());
             cout<<a<<endl;
-            for (int j = 0; j < a.length(); ++j) {
+            for (int j = 1; j < a.length(); ++j) {
                 cout<<" ";
             }
             cout<<"^"<<endl;
