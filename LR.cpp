@@ -531,6 +531,26 @@ void LR::parse(string path) {
             //取ts[i]所在Token的行数，一并输出
             auto token = tokenLine[i-1];
             cout << "错误：输入字符【"<<dic2[ts[i]]<<"】，找不到下一状态！行数："<<token.line<<endl;
+            stack<string> tokenStack;
+            //输出上一行，标出错误位置
+            for (int j = i-1; j > 0 ; --j) {
+                if (tokenLine[j].line == token.line){
+                    tokenStack.push(tokenLine[j].value);
+                } else{
+                    break;
+                }
+            }
+            string a;
+            do {
+                a += tokenStack.top();
+                a += " ";
+                tokenStack.pop();
+            } while (!tokenStack.empty());
+            cout<<a<<endl;
+            for (int j = 0; j < a.length(); ++j) {
+                cout<<" ";
+            }
+            cout<<"^"<<endl;
             //输出上一个字符对应的展望符
             //遍历ACTION/GOTO表，输出有内容的字符
             cout << "期望的输入：";
