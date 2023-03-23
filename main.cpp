@@ -23,7 +23,7 @@ int main() {
     //”Ô∑®∑÷Œˆ
     lr.readGrammar(GRAMMAR_2NF_PATH);
     lr.printProduction();
-    lr.construct_LR1_itemsets();
+    lr.construct_LR1_itemSets();
     lr.printItemSet();
     lr.parse(TOKEN_PATH);
     return 0;

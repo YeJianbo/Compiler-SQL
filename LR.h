@@ -15,7 +15,7 @@ struct Production{
 };
 
 //计算符号s的FIRST集合
-set<char> calc_first(const char s, map<char, set<char>>& first_set, set<char>& visited, vector<Production>& prods);
+set<char> calc_first(char s, map<char, set<char>>& first_set, set<char>& visited, vector<Production>& prods);
 
 //计算输入串s的FIRST集合
 set<char> calc_first_s(string& s, map<char, set<char>>& first_set, vector<Production>& prods);
@@ -47,7 +47,7 @@ private:
     set<char> terminals;
     set<char> nonTerminals;
     //初始状态（起始符S）
-    char start;
+//    char start;
     //产生式集合
     vector<Production> Productions;
     //DFA对应关系，一个Node，输入一个Symbol1，展望符为Symbol2到达新状态
@@ -56,31 +56,31 @@ private:
     map<ItemSet,map<char,pair<ItemSet,bool>>> Action;
     //GOTO表，itemSet输入Vt，到达新项集，此时为待约项
     map<ItemSet,map<char,ItemSet>> Goto;
-
+    //FIRST表
     map<char, set<char>> first_set;
-
+    //项集族
     set<ItemSet> is;
-
+    //Token表
     vector<Token> tokens;
-
+    //token处理后的移入串
     stack<char> tokenString;
-
+    //符号与字符的对应关系
     map<string,char> dic;
-
+    //记录token
     map<int,Token> tokenLine;
-
+    //字符与符号的对应关系
     map<char,string> dic2;
 
 public:
 
     //从path中读取上下文无关文法，保存到产生式集合中，并将该集合返回
-    vector<Production> readGrammar(string path);
+    vector<Production> readGrammar(const string& path);
 
     //对文法进行增广（添加一个新的符号，以便起始状态仅在产生式左边出现一次）
-    void augmentGrammar(vector<Production>& grammar);
+    static void augmentGrammar(vector<Production>& grammar);
 
     //计算LR(1)项集族，并生成LR(1)自动机
-    set<ItemSet> construct_LR1_itemsets();
+    set<ItemSet> construct_LR1_itemSets();
 
     //计算项集族闭包
     ItemSet closure(ItemSet &productions);
@@ -93,16 +93,16 @@ public:
 
     //语法分析
     //path:Token文件的路径
-    void parse(string path);
+    void parse(const string& path);
 
     //输出读入的Token，用于验证
     void printToken();
 
     //读取Token
-    string readToken(string path);
+    string readToken(const string& path);
 
     //读取MATCH.txt，用于匹配字符串到字符的映射
-    void readDic(string path1, string path2);
+    void readDic(const string& path1, const string& path2);
 };
 
 

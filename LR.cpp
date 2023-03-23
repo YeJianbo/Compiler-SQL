@@ -71,9 +71,9 @@ void LR::printToken() {
     cout << left << setw(20) << "line";
     cout << left << setw(20) << "Type";
     cout << left << setw(20) << "value" << endl;
-    for (vector<Token>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
-        cout << left << setw(20) << it->line << right;
-        switch (it->type) {
+    for (auto & token : tokens) {
+        cout << left << setw(20) << token.line << right;
+        switch (token.type) {
             case 0:
                 cout << left << setw(20) << "KEYWORD";
                 break;
@@ -92,16 +92,16 @@ void LR::printToken() {
             default:
                 cout << left << setw(20) << "unknown";
         }
-        if (it->value == " "){
-            it->value = "\\0";
+        if (token.value == " "){
+            token.value = "\\0";
         }
-        if (it->value == "  "){
-            it->value = "\\t";
+        if (token.value == "  "){
+            token.value = "\\t";
         }
-        if (it->value == "\n"){
-            it->value = "\\n";
+        if (token.value == "\n"){
+            token.value = "\\n";
         }
-        cout << left << setw(20) << it->value << endl;
+        cout << left << setw(20) << token.value << endl;
     }
 }
 
@@ -185,7 +185,7 @@ set<char> calc_first(const char s, map<char, set<char>> &first_set, set<char> &v
 }
 
 //读取二型文法，规定该二型文法的VN与VT均为单个字符，保存在productions中
-vector<Production> LR::readGrammar(string path) {
+vector<Production> LR::readGrammar(const string& path) {
     ifstream file(path);
     vector<Production> productions;
     string line;
@@ -210,7 +210,7 @@ vector<Production> LR::readGrammar(string path) {
         size_t p = line.find("->");
         if (p == string::npos){
             cout << "输入的语法有误！"<<endl;
-            return vector<Production>();
+            return {};
         }
         string h = trim(line.substr(0,p));
         line = trim(line.substr(p + 2));
@@ -222,7 +222,7 @@ vector<Production> LR::readGrammar(string path) {
                 production.r += line;
             if (!isupper(h[0])){
                 cout << "您输入的语法有误！"<<endl;
-                return vector<Production>();
+                return {};
             }
             for (auto& sss:production.r) {
                 if (isupper(sss)){
@@ -242,7 +242,7 @@ vector<Production> LR::readGrammar(string path) {
                 production.r = trim(s);
                 if (!isupper(h[0])){
                     cout << "您输入的语法有误！"<<endl;
-                    return vector<Production>();
+                    return {};
                 }
                 for (auto& sss:production.r) {
                     if (isupper(sss)){
@@ -267,39 +267,39 @@ vector<Production> LR::readGrammar(string path) {
 //对文法进行增广处理
 void LR::augmentGrammar(vector<Production> &grammar) {
 //    vector<Production> productions;
-    char start = 'Z';
-    Production production = {start, {grammar[0].l}};
+    char _start = 'Z';
+    Production production = {_start, {grammar[0].l}};
     grammar.insert(grammar.begin(), production);
-    grammar[0].l = start;
+    grammar[0].l = _start;
 }
 
 // 用于构造LR(1)分析的项集族
 // 构造方法：首先获取初始状态的项集，对该项集依次输入所有点后的字符，转移到新状态，
 // 对该新状态求项集族闭包，闭包结果为该状态所有项集，依次处理，直到没有项集新增，得到项集族
-set<ItemSet> LR::construct_LR1_itemsets() {
+set<ItemSet> LR::construct_LR1_itemSets() {
     // 初始项集为Z -> .S, $
-    ItemSet initial_itemset;
-    initial_itemset.items.insert(Item{ Production{ 'Z', "S" }, 0, { '$' } });
+    ItemSet initial_itemSet;
+    initial_itemSet.items.insert(Item{Production{'Z', "S" }, 0, {'$' } });
     // 项集族
-    set<ItemSet> itemsets;
-    initial_itemset.name = "I" + to_string(itemsets.size());
-    itemsets.insert(closure(initial_itemset));
+    set<ItemSet> itemSets;
+    initial_itemSet.name = "I" + to_string(itemSets.size());
+    itemSets.insert(closure(initial_itemSet));
     // 待处理项集队列
-    queue<ItemSet> itemset_queue;
+    queue<ItemSet> itemSet_queue;
     // 处理初始状态
-    itemset_queue.push(initial_itemset);
+    itemSet_queue.push(initial_itemSet);
     // 遍历所有待处理的项集I，对于每个项中的每个文法符号，GOTO(I, X)非空且不在闭包中，则将GOTO加入闭包
-    while (!itemset_queue.empty()) {
+    while (!itemSet_queue.empty()) {
         //取项集，遍历每个项，取项点后的输入符号，产生新状态，新状态求项集族闭包，得到项集，加入项集族中
         //直到没有新项集加入项集族，程序终止
-        ItemSet itemset = itemset_queue.front();
-        itemset_queue.pop();
+        ItemSet itemSet = itemSet_queue.front();
+        itemSet_queue.pop();
         // 对每个文法符号进行扩展
-        map<char, ItemSet> next_itemsets;
+        map<char, ItemSet> next_itemSets;
         set<char> charSet;
         map<char,ItemSet> itemMap;
         //遍历项集中的每一个项，取点后的第一个字符
-        for (const auto& item : itemset.items){
+        for (const auto& item : itemSet.items){
             auto item1 = item;
             //如果点不在最后，为移进/待约项目，点后移
             if (item.dot < item.rule.r.length()){
@@ -314,25 +314,24 @@ set<ItemSet> LR::construct_LR1_itemsets() {
                     Production p = item.rule;
                     ii.rule = p;
                     iss.items.insert(ii);
-                    Action[itemset][l] = {iss, true};
+                    Action[itemSet][l] = {iss, true};
                     //对于Z -> S.，状态为acc
                     if (p.l == 'Z' && p.r == "S"){
                         iss.name = "ACC";
-                        Action[itemset][l] = {iss, false};
+                        Action[itemSet][l] = {iss, false};
                     }
                 }
             }
         }
         //遍历所有可输入项，对于每个可输入项，在项集中寻找项的表达式，组成一个项集，将其求闭包，闭包结果新建状态
         for (auto& c:charSet) {
-//            cout<<c<<"|";
             ItemSet iss = itemMap[c];
             //求完闭包后，得到新状态，新状态如果不存在，那么新增，得到状态后（无论是否新增），添加关系转移表
             closure(iss);
             //标记flag，值不变说明没有找到已有项集，此时新建一个项集
             int flag = 0;
-            for (auto& i:itemsets) {
-                //i == iss，说明找到了完全一致的itemset，不需要新增状态
+            for (auto& i:itemSets) {
+                //i == iss，说明找到了完全一致的itemSet，不需要新增状态
                 if (i == iss){
                     flag = 1;
                     iss.name = i.name;
@@ -341,22 +340,22 @@ set<ItemSet> LR::construct_LR1_itemsets() {
             }
             //没找到一致的状态,新增
             if (!flag){
-                iss.name = "I" + to_string(itemsets.size());
-                itemset_queue.push(iss);
-                itemsets.insert(iss);
+                iss.name = "I" + to_string(itemSets.size());
+                itemSet_queue.push(iss);
+                itemSets.insert(iss);
             }
             //将状态转移结果加入ACTION/GOTO表
             //对于大写字母（非终结符），将状态转移加入GOTO表
             if (isupper(c)){
-                Goto[itemset][c] = iss;
+                Goto[itemSet][c] = iss;
             }else{
                 //对于非终结符，状态加入Action，为移进状态
-                Action[itemset][c] = {iss, false};
+                Action[itemSet][c] = {iss, false};
             }
         }
     }
-    is = itemsets;
-    return itemsets;
+    is = itemSets;
+    return itemSets;
 }
 
 
@@ -458,7 +457,7 @@ void LR::printProduction() {
 //语法分析
 //输入Token的路径path，读取Token表，对该Token进行语法分析，
 //如果通过编译，输出"YES"，否则输出"NO"
-void LR::parse(string path) {
+void LR::parse(const string& path) {
 
     //记录处理次数，用于输出处理过程
     int n = 0;
@@ -492,7 +491,7 @@ void LR::parse(string path) {
             //bool为真，此时需要归约
             //归约过程，取归约串，将串中内容连同其对应状态依次出栈，然后将归约式子左边入栈，
             //取状态栈栈顶，查询新入栈元素的GOTO表，将找到的状态加入状态栈，接着查看下一个状态
-            while (p.second == true){
+            while (p.second){
                 //取归约式
                 Production pp = p.first.items.begin()->rule;
                 //逆序遍历归约式右边，将内容依次出栈
@@ -555,11 +554,11 @@ void LR::parse(string path) {
             //遍历ACTION/GOTO表，输出有内容的字符
             cout << "期望的输入：";
             for (const auto &c: nonTerminals){
-                auto a = Action[stateStack.top()][c];
-                if (!a.first.name.empty()){
+                auto _a =Action[stateStack.top()][c];
+                if (!_a.first.name.empty()){
                     cout<< dic2[c] <<"  ";
                 } else {
-                    if (a.first.items.begin()->rule.l != '\0')
+                    if (_a.first.items.begin()->rule.l != '\0')
                         cout<< dic2[c] <<"  ";
                 }
             }
@@ -592,7 +591,7 @@ void LR::parse(string path) {
         cout<<"NO"<<endl;
 }
 
-string LR::readToken(string path) {
+string LR::readToken(const string& path) {
     readDic(MATCH_PATH,MATCH2_PATH);
     //打开文件，将Token读取进Token集中，然后对Token进行分析
     string line;
@@ -601,7 +600,7 @@ string LR::readToken(string path) {
         cout << "找不到源代码文件！" << endl;
         return "";
     }
-    string s = "";
+    string s;
     //从file中获取一行，保存在line中，逐行处理，存入Token表
     while(getline(file,line)){
         istringstream iss(line);
@@ -612,18 +611,18 @@ string LR::readToken(string path) {
         Token token;
         token.line = stoi(l);
         token.value = value;
-        if (!type.compare("KEYWORD")){
+        if (type == "KEYWORD"){
             token.type = KEYWORD;
             if (!dic[token.value]){
                 dic[token.value] = 'k';
             }
-        }else if (!type.compare("IDENTIFIER")){
+        }else if (type == "IDENTIFIER"){
             token.type = IDENTIFIER;
             dic[token.value] = 't';
-        } else if (!type.compare("CONSTANT")){
+        } else if (type == "CONSTANT"){
             token.type = CONSTANT;
             dic[token.value] = 'd';
-        } else if (!type.compare("DELIMITER")){
+        } else if (type == "DELIMITER"){
             if (token.value == "\\0" || token.value == "\\t" || token.value == "\\n"){
                 //跳过空格
                 continue;
@@ -631,7 +630,7 @@ string LR::readToken(string path) {
             token.type = DELIMITER;
             dic[token.value] = token.value[0];
             dic2[token.value[0]] = token.value;
-        } else if (!type.compare("OPERATOR")){
+        } else if (type == "OPERATOR"){
             token.type = OPERATOR;
             if (!dic[token.value]){
                 dic[token.value] = token.value[0];
@@ -651,7 +650,7 @@ string LR::readToken(string path) {
 }
 
 //读取关键字对应的字典
-void LR::readDic(string path1, string path2) {
+void LR::readDic(const string& path1, const string& path2) {
     //打开文件，将关键字的对应读入，保存在类中字典中
     string line;
     ifstream file(path1);
