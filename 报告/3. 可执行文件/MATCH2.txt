@@ -1,0 +1,26 @@
+a include
+b begin
+c const
+d Constant
+e else
+f do
+g type
+h end
+i if
+j iostream
+k keyword
+l namespace
+m */
+n for
+o break or continue
+p +-
+q return
+r binary
+s std
+t identifier
+u using
+v then
+w while
+x class
+y Composite assignment operator
+$ $
