@@ -5,6 +5,7 @@
 #include "LR.h"
 
 
+//µπ–Ú’ª
 template<class T>
 void reverseStack(stack<T> &s) {
     if (s.empty()) {

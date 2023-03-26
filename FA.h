@@ -3,10 +3,10 @@
 //
 #include <bits/stdc++.h>
 
-#define GRAMMAR_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\GRAMMAR.txt"
-#define SOURCE_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\SOURCE_CODE.txt"
-#define KEYWORD_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\KEYWORD.txt"
-#define TOKEN_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\TOKEN.txt"
+#define GRAMMAR_PATH "GRAMMAR.txt"
+#define SOURCE_PATH "SOURCE_CODE.txt"
+#define KEYWORD_PATH "KEYWORD.txt"
+#define TOKEN_PATH "TOKEN.txt"
 
 
 using namespace std;
@@ -63,9 +63,9 @@ public:
     //输出字母表中所有的字母
     void printCharSet();
     //分析处理一行数据
-    void deal(const string& line);
+    void deal(const string& l, const string& r);
     //将一个状态加入初态集（同时加入状态集），如果存在，返回该节点
-    Node insertIntoStartState(string name);
+    Node insertIntoStartState(const string& name);
     //将一个状态加入终态集
     Node insertIntoEndState(const string& name);
     //将一个状态加入状态集
@@ -84,23 +84,32 @@ public:
     set<Node> move(char input,const set<Node>& node,FA nfa);
 };
 
+//去除字符串前后的空格
 string trim(const string& str);
 
+//检查节点集合中是否已指定字符串开头的Node
 bool nodeStartsWith(const set<Node>& nodes, const string& prefix);
 
+//检查两个set是否相等
 bool setsAreEqual(const set<Node>& s1, set<Node> s2);
 
+//将sourceSet中的所有元素加入到destSet中
 template <typename T>
 void addAllElements(std::set<T>& destSet, const std::set<T>& sourceSet);
 
+//检查字符串是否以指定子串开头
 bool startsWith(const std::string& prefix, const std::string& str);
 
+//检查状态集中是否有以指定字符串开头并且以指定字符串结尾的状态
 bool hasNode(set<Node>& nodes, const string& string1, const string& string2);
 
+//检查状态集中是否有以指定名称结尾的状态
 bool isNodeNameEndsWith(const Node& node, const string& string2);
 
+//从文件中读取关键字文件
 set<string> readWordsFromFile(const string& path);
 
+//打印并输出Token表
 void printTokens(vector<Token> tokens);
 
 //语法分析

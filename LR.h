@@ -2,9 +2,9 @@
 // Created by YeJianbo on 2023/3/16.
 //
 #include "FA.h"
-#define GRAMMAR_2NF_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\GRAMMAR_2NF.txt"
-#define MATCH_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\MATCH.txt"
-#define MATCH2_PATH "E:\\Code\\JetBrain\\CLion\\Compiler\\MATCH2.txt"
+#define GRAMMAR_2NF_PATH "GRAMMAR_2NF.txt"
+#define MATCH_PATH "MATCH.txt"
+#define MATCH2_PATH "MATCH2.txt"
 
 //产生式
 struct Production{
@@ -44,7 +44,9 @@ struct ItemSet{
 
 class LR {
 private:
+    //终结符集合
     set<char> terminals;
+    //非终结符集合
     set<char> nonTerminals;
     //初始状态（起始符S）
 //    char start;

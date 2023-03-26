@@ -45,26 +45,24 @@ void FA::GrammarToNFA(const string& path){
             if(line.empty()) break;
             continue;
         }
-
+        size_t p = line.find("->");
+        //没找到，产生式错误
+        if (p == string::npos){
+            cout<<"输入的语法有误！"<<endl;
+            return;
+        }
+        string h = trim(line.substr(0,p));
+        line = trim(line.substr(p+2));
         //没有'|'，说明是单条产生式，直接处理
         if (line.find('|') == string::npos){
-            size_t p2 = line.find("->");
-            string h = trim(line.substr(0,p2));
-            line = trim(line.substr(p2+2));
-            deal(h +" -> "+ line);
+//            deal(h +" -> "+ line);
+            deal(h,line);
         }else{
-            size_t p = line.find("->");
-            //没找到，产生式错误
-            if (p == string::npos){
-                cout<<"输入的语法有误！"<<endl;
-                return;
-            }
-            string h = trim(line.substr(0,p));
-            line = trim(line.substr(p+2));
             stringstream ss(line);
             string production;
             while (getline(ss, production, '|')) {
-                deal(h+" -> "+trim(production));
+//                deal(h+" -> "+trim(production));
+                deal(h, trim(production));
             }
         }
         //处理完成，清空字符串
@@ -76,14 +74,12 @@ void FA::GrammarToNFA(const string& path){
 
 //处理单条产生式，已去除空格
 //如S -> aA
-void FA::deal(const string& line){
-    istringstream iss(line);
-    string ls, arrow, rs; //ls:左边    arrow：箭头    rs：右边
+void FA::deal(const string& l, const string& r){
     char input;
-    //根据空格切分
-    iss >> ls >> arrow >> rs;
-    Node node = insertIntoState(ls);
-    //如果是大写字母开头，输入为?（空）
+//    string ls = l;
+    string rs = r;
+    Node node = insertIntoState(l);
+    //如果是大写字母开头，输入为$（空）
     if (isupper(rs[0])){
         input = '$';
     }else if (rs[0] == '\\'){
@@ -106,15 +102,15 @@ void FA::deal(const string& line){
         if (rs.empty()){
             string ss;
             //标识符和关键字
-            if (startsWith("I",ls)){
+            if (startsWith("I",l)){
                 ss = "_I";
-            }else if (startsWith("O",ls)){
+            }else if (startsWith("O",l)){
                 //运算符
                 ss = "_O";
-            }else if (startsWith("Separator",ls)){
+            }else if (startsWith("Separator",l)){
                 //Separator
                 ss = "_S";
-            }else if (startsWith("A",ls) || startsWith("B",ls) || startsWith("C",ls) || startsWith("D",ls)){
+            }else if (startsWith("A",l) || startsWith("B",l) || startsWith("C",l) || startsWith("D",l)){
                 //常量
                 ss = "_C";
             }
@@ -129,15 +125,15 @@ void FA::deal(const string& line){
         if (rs.empty()){
             string ss;
             //标识符和关键字
-            if (startsWith("I",ls)){
+            if (startsWith("I",l)){
                 ss = "_I";
-            }else if (startsWith("O",ls)){
+            }else if (startsWith("O",l)){
                 //运算符
                 ss = "_O";
-            }else if (startsWith("Separator",ls)){
+            }else if (startsWith("Separator",l)){
                 //Separator
                 ss = "_S";
-            }else if (startsWith("A",ls) || startsWith("B",ls) || startsWith("C",ls) || startsWith("D",ls)){
+            }else if (startsWith("A",l) || startsWith("B",l) || startsWith("C",l) || startsWith("D",l)){
                 //常量
                 ss = "_C";
             }
@@ -251,10 +247,9 @@ void FA::printCharSet() {
     for (char it : charSet) {
         cout << it << " "; // 打印set中的值
     }
-
 }
 
-Node FA::insertIntoStartState(string name) {
+Node FA::insertIntoStartState(const string& name) {
     // 使用迭代器遍历 startState
     if (startState.name.empty()) {
         startState.name = name;
@@ -383,8 +378,7 @@ bool setsAreEqual(const set<Node>& s1, set<Node> s2) {
 
 template<typename T>
 void addAllElements(set<T> &destSet, const set<T> &sourceSet) {
-    for (const auto& e: sourceSet)
-    {
+    for (const auto& e: sourceSet){
         destSet.insert(e);
     }
 }

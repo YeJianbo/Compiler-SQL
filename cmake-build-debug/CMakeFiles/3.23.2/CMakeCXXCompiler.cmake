@@ -1,7 +1,7 @@
-set(CMAKE_CXX_COMPILER "D:/JetBrains/CLion 2022.2/bin/mingw/bin/g++.exe")
+set(CMAKE_CXX_COMPILER "D:/mingw32/bin/c++.exe")
 set(CMAKE_CXX_COMPILER_ARG1 "")
 set(CMAKE_CXX_COMPILER_ID "GNU")
-set(CMAKE_CXX_COMPILER_VERSION "11.2.0")
+set(CMAKE_CXX_COMPILER_VERSION "12.2.0")
 set(CMAKE_CXX_COMPILER_VERSION_INTERNAL "")
 set(CMAKE_CXX_COMPILER_WRAPPER "")
 set(CMAKE_CXX_STANDARD_COMPUTED_DEFAULT "17")
@@ -22,11 +22,11 @@ set(CMAKE_CXX_SIMULATE_VERSION "")
 
 
 
-set(CMAKE_AR "D:/JetBrains/CLion 2022.2/bin/mingw/bin/ar.exe")
-set(CMAKE_CXX_COMPILER_AR "D:/JetBrains/CLion 2022.2/bin/mingw/bin/gcc-ar.exe")
-set(CMAKE_RANLIB "D:/JetBrains/CLion 2022.2/bin/mingw/bin/ranlib.exe")
-set(CMAKE_CXX_COMPILER_RANLIB "D:/JetBrains/CLion 2022.2/bin/mingw/bin/gcc-ranlib.exe")
-set(CMAKE_LINKER "D:/JetBrains/CLion 2022.2/bin/mingw/bin/ld.exe")
+set(CMAKE_AR "D:/mingw32/bin/ar.exe")
+set(CMAKE_CXX_COMPILER_AR "D:/mingw32/bin/gcc-ar.exe")
+set(CMAKE_RANLIB "D:/mingw32/bin/ranlib.exe")
+set(CMAKE_CXX_COMPILER_RANLIB "D:/mingw32/bin/gcc-ranlib.exe")
+set(CMAKE_LINKER "D:/mingw32/bin/ld.exe")
 set(CMAKE_MT "")
 set(CMAKE_COMPILER_IS_GNUCXX 1)
 set(CMAKE_CXX_COMPILER_LOADED 1)
@@ -51,7 +51,7 @@ set(CMAKE_CXX_LINKER_PREFERENCE 30)
 set(CMAKE_CXX_LINKER_PREFERENCE_PROPAGATES 1)
 
 # Save compiler ABI information.
-set(CMAKE_CXX_SIZEOF_DATA_PTR "8")
+set(CMAKE_CXX_SIZEOF_DATA_PTR "4")
 set(CMAKE_CXX_COMPILER_ABI "")
 set(CMAKE_CXX_BYTE_ORDER "LITTLE_ENDIAN")
 set(CMAKE_CXX_LIBRARY_ARCHITECTURE "")
@@ -77,7 +77,7 @@ endif()
 
 
 
-set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "D:/JetBrains/CLion 2022.2/bin/mingw/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++;D:/JetBrains/CLion 2022.2/bin/mingw/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32;D:/JetBrains/CLion 2022.2/bin/mingw/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward;D:/JetBrains/CLion 2022.2/bin/mingw/lib/gcc/x86_64-w64-mingw32/11.2.0/include;D:/JetBrains/CLion 2022.2/bin/mingw/include;D:/JetBrains/CLion 2022.2/bin/mingw/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed;D:/JetBrains/CLion 2022.2/bin/mingw/x86_64-w64-mingw32/include")
-set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "")
-set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "")
+set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "D:/mingw32/lib/gcc/i686-w64-mingw32/12.2.0/include/c++;D:/mingw32/lib/gcc/i686-w64-mingw32/12.2.0/include/c++/i686-w64-mingw32;D:/mingw32/lib/gcc/i686-w64-mingw32/12.2.0/include/c++/backward;D:/mingw32/lib/gcc/i686-w64-mingw32/12.2.0/include;D:/mingw32/lib/gcc/i686-w64-mingw32/12.2.0/include-fixed;D:/mingw32/i686-w64-mingw32/include")
+set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "stdc++;mingw32;gcc_s;gcc;moldname;mingwex;kernel32;advapi32;shell32;user32;kernel32;iconv;mingw32;gcc_s;gcc;moldname;mingwex;kernel32")
+set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "D:/mingw32/lib/gcc/i686-w64-mingw32/12.2.0;D:/mingw32/lib/gcc;D:/mingw32/i686-w64-mingw32/lib;D:/mingw32/lib")
 set(CMAKE_CXX_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")

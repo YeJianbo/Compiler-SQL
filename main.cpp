@@ -26,5 +26,7 @@ int main() {
     lr.construct_LR1_itemSets();
     lr.printItemSet();
     lr.parse(TOKEN_PATH);
+    cout << endl << "°´Enter¼üÍË³ö...";
+    getchar();
     return 0;
 }
