@@ -17,12 +17,14 @@ int main() {
     int i = LexicalAnalyze(dfa,SOURCE_PATH);
     if (!i){
         cout<<"程序错误，现已终止！"<<endl;
+        cout << endl << "按Enter键退出...";
+        getchar();
         return -1;
     }
     LR lr;
     //语法分析
     lr.readGrammar(GRAMMAR_2NF_PATH);
-    lr.printProduction();
+//    lr.printProduction();
     lr.construct_LR1_itemSets();
     lr.printItemSet();
     lr.parse(TOKEN_PATH);

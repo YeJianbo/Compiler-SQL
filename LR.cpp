@@ -434,7 +434,7 @@ void LR::printItemSet() {
             } else {
                 Production pp = a.first.items.begin()->rule;
                 if (pp.l != '\0')
-                    cout<<"--"<< c << "--> {" << pp.l << " -> "<<pp.r<<"}  ";
+                    cout<<"--"<< c << "--> { " << pp.l << " -> "<<pp.r<<" }  ";
             }
         }
         for (const auto &c: terminals){
@@ -488,7 +488,6 @@ void LR::parse(const string& path) {
         } else {
             //
             auto p = Action[top][ts[i]];
-
             //bool为真，此时需要归约
             //归约过程，取归约串，将串中内容连同其对应状态依次出栈，然后将归约式子左边入栈，
             //取状态栈栈顶，查询新入栈元素的GOTO表，将找到的状态加入状态栈，接着查看下一个状态
@@ -530,7 +529,7 @@ void LR::parse(const string& path) {
         if (next.name.empty()){
             //取ts[i]所在Token的行数，一并输出
             auto token = tokenLine[i-1];
-            cout << "错误：输入字符【"<<dic2[ts[i]]<<"】，找不到下一状态！行数："<<token.line<<endl;
+            cout << "错误：输入字符类型【"<<dic2[ts[i]]<<"】，找不到下一状态！行数："<<token.line<<endl;
             stack<string> tokenStack;
             //输出上一行，标出错误位置
             for (int j = i-1; j > 0 ; --j) {
@@ -564,7 +563,7 @@ void LR::parse(const string& path) {
                 }
             }
             cout<<endl;
-            break;
+            return;
         }
         //入栈
         charStack.push(ts[i]);
