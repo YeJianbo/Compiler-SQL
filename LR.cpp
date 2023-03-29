@@ -108,6 +108,7 @@ void LR::printToken() {
 
 //计算字符串的first集
 set<char> calc_first_s(string &s, map<char, set<char>> &first_set, vector<Production> &prods) {
+    //first：求得的结果 visited：记录已访问的符号
     set<char> first;
     set<char> visited;
     //如果s的第一个符号是终结符(小写字母)，直接将其加入FIRST集合中
@@ -121,6 +122,7 @@ set<char> calc_first_s(string &s, map<char, set<char>> &first_set, vector<Produc
     }
     //否则，计算第一个符号的FIRST集合
     else {
+        //调用calc_first计算单个字符的first集，将返回的集合加入结果中，如果包含空串，递归调用，直到没有空串出现
         auto tmp_set = calc_first(s[0], first_set, visited, prods);
         first.insert(tmp_set.begin(), tmp_set.end());
         if (tmp_set.find('$') != tmp_set.end()) {
@@ -149,7 +151,7 @@ set<char> calc_first(const char s, map<char, set<char>> &first_set, set<char> &v
     if (!isupper(s) || s == '$') {
         first.insert(s);
     }
-        //否则，遍历产生式集合，找到所有以s为左部的产生式，并计算其右部符号的FIRST集合
+    //否则，遍历产生式集合，找到所有以s为左部的产生式，并计算其右部符号的FIRST集合
     else {
         for (auto& p : prods) {
             if (p.l == s) {
@@ -163,6 +165,9 @@ set<char> calc_first(const char s, map<char, set<char>> &first_set, set<char> &v
                     }
                 }
                 else {
+                    // 递归调用calc_first函数，计算右部第一个符号的FIRST集，将返回的集合加入结果集中，
+                    // 如果返回的集合中包含空串，则需要继续计算右部后面符号的FIRST集合，并将其加入当前
+                    // 符号的FIRST集合中，直到不包含空串或者遍历完右部所有符号
                     auto tmp_set = calc_first(p.r[0], first_set, visited, prods);
                     first.insert(tmp_set.begin(), tmp_set.end());
                     if (tmp_set.find('$') != tmp_set.end()) {
@@ -705,8 +710,3 @@ void LR::readDic(const string& path1, const string& path2) {
     }
     file2.close();
 }
-
-
-
-
-

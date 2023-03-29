@@ -57,7 +57,7 @@ public:
     //分析输入的语法，将其转换为NFA
     void GrammarToNFA(const string& path);
     //输出NFA的状态转移关系
-    void printEdge();
+    void printNFA();
     //输出DFA的状态转移关系
     void printDFA();
     //输出字母表中所有的字母

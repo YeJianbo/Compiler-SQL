@@ -7,7 +7,7 @@ int main() {
     fa.GrammarToNFA(GRAMMAR_PATH);
     //控制台输出该NFA
     cout<<"NFA:"<<endl;
-    fa.printEdge();
+    fa.printNFA();
     FA dfa;
     dfa.TransToDFA(fa);
     //将该NFA转为DFA,然后最小化,输出最小化的DFA

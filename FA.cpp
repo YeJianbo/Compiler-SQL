@@ -216,7 +216,7 @@ void FA::getDFA(FA nfa, const Node& start, const set<Node>& n) {
     }
 }
 
-void FA::printEdge() {
+void FA::printNFA() {
     for(const auto& from : transNFA){
         for (const auto& e : from.second) {
             cout<<"from "<<from.first.id<<"["<<from.first.name<<"] through ["<<e.first<<"] to ";
@@ -306,13 +306,15 @@ Node FA::insertIntoState(const string& name) {
 //求输入节点的ε-闭包
 set<Node> FA::closure(const Node& node) {
     set<Node> result;
+    //定义一个栈，用于深度优先搜索
     stack<Node> stack;
+    //将初始节点压入栈中
     stack.push(node);
     result.insert(node);
+    //遍历transNFA表，如果存在ε-转移，加入集合，压栈，反复操作
     while (!stack.empty()) {
         Node current = stack.top();
         stack.pop();
-
         if (transNFA.count(current) > 0 && transNFA[current].count('$') > 0) {
             // 遍历当前节点的所有ε转移
             for (const Node& next : transNFA[current]['$']) {
