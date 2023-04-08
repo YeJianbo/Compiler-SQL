@@ -39,6 +39,7 @@ struct Token {
 };
 
 
+
 class FA{                                   //自动机M = (K, ∑, f, S, Z)
 private:
     Node startState;                        //初态S

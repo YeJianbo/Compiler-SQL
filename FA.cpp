@@ -358,11 +358,6 @@ bool nodeStartsWith(const set<Node>& nodes, const string& prefix) {
     bool contains_value = std::any_of(nodes.begin(), nodes.end(),
                                       [prefix](const Node& node){ return node.name.compare(0, prefix.size(), prefix) ==
                                                                          0; });
-//    for (const auto& node : nodes) {
-//        if (node.name.compare(0, prefix.size(), prefix) == 0) {
-//            return true;
-//        }
-//    }
     return contains_value;
 }
 
@@ -405,11 +400,6 @@ bool hasNode(set<Node>& nodes, const string& string1, const string& string2) {
     bool b = std::any_of(nodes.begin(), nodes.end(), [&](const auto &node) {
         return (node.name.substr(0, string1.length()) == string1) && (node.name.substr(node.name.length() - string2.length()) == string2);
     });
-//    for (const auto & node : nodes) {
-//        if (node.name.substr(0, string1.length()) == string1 && node.name.substr(node.name.length() - string2.length()) == string2) {
-//            return true;
-//        }
-//    }
     return b;
 }
 
@@ -500,9 +490,6 @@ vector<Token> LAbyLine(const FA& dfa, const string& line, int n) {
     //遍历行
     while ( i < l.length() ){
         state = transDFA[state][l[i]];
-//        if (l=="float b = 1.145e+14.1;"){
-//            int iii = 0;
-//        }
         //找不到下一状态
         if (state.id == 0){
             vector<Token> v;
@@ -516,11 +503,11 @@ vector<Token> LAbyLine(const FA& dfa, const string& line, int n) {
             } else if (ttt.type == CONSTANT && isdigit(ttt.value[0])){
                 v.push_back({ERROR,s,2});
                 v.push_back(ttt);
-            } else if (buf[buf.size()-1] == 'e' || buf[buf.size()-1] == 'E'){
+            } else if (ttt.type == CONSTANT &&buf[buf.size()-1] == 'e' || buf[buf.size()-1] == 'E'){
                 v.push_back({ERROR,s,2});
                 ttt.value += buf;
                 v.push_back(ttt);
-            }else {
+            }else{
                 v.push_back({ERROR,s,9});
                 v.push_back(ttt);
             }

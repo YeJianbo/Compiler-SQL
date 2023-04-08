@@ -68,6 +68,22 @@ bool ItemSet::operator<(const ItemSet &o) const {
     return stoi(name.substr(1, name.size())) < stoi(o.name.substr(1, o.name.size()));
 }
 
+void printTree(TreeNode* node, int depth) {
+    if (node == nullptr) {
+        return;
+    }
+
+    for (int i = 0; i < depth; i++) {
+        cout << "|--"; // 每增加一层深度，缩进2个空格
+    }
+    cout << node->symbol << endl;
+
+    for (auto child : node->children) {
+        printTree(child, depth + 1); // 递归遍历子节点
+    }
+}
+
+
 void LR::printToken() {
     cout << left << setw(20) << "line";
     cout << left << setw(20) << "Type";
@@ -464,7 +480,6 @@ void LR::printProduction() {
 //输入Token的路径path，读取Token表，对该Token进行语法分析，
 //如果通过编译，输出"YES"，否则输出"NO"
 void LR::parse(const string& path) {
-
     //记录处理次数，用于输出处理过程
     int n = 0;
     //读取Token至Token集合, 并将Token表转换为可接受的符号串
@@ -473,6 +488,10 @@ void LR::parse(const string& path) {
     stack<char> charStack;
     //状态栈
     stack<ItemSet> stateStack;
+    stack<TreeNode*> treeStack;
+//    TreeNode* node1 = new TreeNode();
+//    node1->symbol = 'Z';
+    treeStack.push(nullptr);
     //设置初态
     charStack.push('$');
     ItemSet iss = *is.begin();
@@ -489,9 +508,7 @@ void LR::parse(const string& path) {
         //大写字母（非终结符），查GOTO表，否则查ACTION表
         if (isupper(ts[i])){
             next = Goto[top][ts[i]];
-
         } else {
-            //
             auto p = Action[top][ts[i]];
             //bool为真，此时需要归约
             //归约过程，取归约串，将串中内容连同其对应状态依次出栈，然后将归约式子左边入栈，
@@ -499,11 +516,19 @@ void LR::parse(const string& path) {
             while (p.second){
                 //取归约式
                 Production pp = p.first.items.begin()->rule;
+                vector<TreeNode*> children(pp.r.size());
                 //逆序遍历归约式右边，将内容依次出栈
                 for (int j = pp.r.size() - 1; j >= 0; --j) {
                     stateStack.pop();
                     charStack.pop();
+                    auto a = treeStack.top();
+                    children[j] = a;
+                    treeStack.pop();
                 }
+                TreeNode * node = new TreeNode();
+                node->symbol = pp.l;
+                node->children = children;
+                treeStack.push(node);
                 //左边入栈
                 charStack.push(pp.l);
                 //查GOTO表
@@ -570,6 +595,10 @@ void LR::parse(const string& path) {
             cout<<endl;
             return;
         }
+        //移进
+        TreeNode* node = new TreeNode();
+        node->symbol = ts[i];
+        treeStack.push(node);
         //入栈
         charStack.push(ts[i]);
         stateStack.push(next);
@@ -592,6 +621,8 @@ void LR::parse(const string& path) {
     cout<<"接收状态：";
     if (stateStack.top().name == "ACC"){
         cout<<"YES"<<endl;
+        treeStack.pop();
+        printTree(treeStack.top(),0);
     }else
         cout<<"NO"<<endl;
 }

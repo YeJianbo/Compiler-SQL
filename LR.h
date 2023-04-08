@@ -37,6 +37,12 @@ struct ItemSet{
     bool operator<(const ItemSet& o) const;
 };
 
+// 语法分析树
+struct TreeNode {
+    char symbol;
+    vector<TreeNode*> children;
+};
+
 /*语法分析 步骤
  * 读取上下文无关文法（文件给出），保存产生式，增广产生式，计算LR(1)项集族，
  * 通过项集族构造LR(1)自动机，根据自动机得到ACTION表及GOTO表，

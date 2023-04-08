@@ -1,26 +1,13 @@
-a include
-b begin
-c const
+a and
 d Constant
-e else
-f do
-g type
-h end
-i if
-j iostream
+e =
+f from
 k keyword
-l namespace
 m */
-n for
-o break or continue
+n not
+o or
 p +-
-q return
-r binary
-s std
+s select
 t identifier
-u using
-v then
-w while
-x class
-y Composite assignment operator
+w where
 $ $
