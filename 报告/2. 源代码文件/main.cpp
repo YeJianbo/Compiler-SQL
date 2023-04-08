@@ -7,7 +7,7 @@ int main() {
     fa.GrammarToNFA(GRAMMAR_PATH);
     //控制台输出该NFA
     cout<<"NFA:"<<endl;
-    fa.printEdge();
+    fa.printNFA();
     FA dfa;
     dfa.TransToDFA(fa);
     //将该NFA转为DFA,然后最小化,输出最小化的DFA
@@ -24,7 +24,7 @@ int main() {
     LR lr;
     //语法分析
     lr.readGrammar(GRAMMAR_2NF_PATH);
-    lr.printProduction();
+//    lr.printProduction();
     lr.construct_LR1_itemSets();
     lr.printItemSet();
     lr.parse(TOKEN_PATH);

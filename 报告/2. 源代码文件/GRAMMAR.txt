@@ -1,18 +1,24 @@
+// 开始 -> 标识符（关键字）|常量|分隔符|运算符
 Start -> Identifier | Constant | Separator | Operator
-//
+//标识符（关键字）：字母或者下划线开头
 Identifier -> aI | bI | cI | dI | eI | fI | gI | hI | iI | jI | kI | lI | mI | nI | oI | pI | qI | rI | sI | tI | uI | vI | wI | xI | yI | zI | _I
 I -> $ | aI | bI | cI | dI | eI | fI | gI | hI | iI | jI | kI | lI | mI | nI | oI | pI | qI | rI | sI | tI | uI | vI | wI | xI | yI | zI | _I | 0I | 1I | 2I | 3I | 4I | 5I | 6I | 7I | 8I | 9I
+//常量：整数、小数、虚数、科学计数法
 Constant -> A | B | C | D
+//整数
 A -> +A0 | -A0 | A0 | 0
 A0 -> 1A1 | 2A1 | 3A1 | 4A1 | 5A1 | 6A1 | 7A1 | 8A1 | 9A1
 A1 -> $ | 0A1 | 1A1 | 2A1 | 3A1 | 4A1 | 5A1 | 6A1 | 7A1 | 8A1 | 9A1
+//小数
 B -> 0B3 | 1B1 | 2B1 | 3B1 | 4B1 | 5B1 |6B1 | 7B1 | 8B1 | 9B1
 B1 -> .B2 | 1B1 | 2B1 | 3B1 | 4B1 | 5B1 |6B1 | 7B1 | 8B1 | 9B1 | 0B1
 B2 -> 0B2 | 1B2 | 2B2 | 3B2 | 4B2 | 5B2 |6B2 | 7B2 | 8B2 | 9B2 | $
 B3 -> .B2
+//虚数
 C->1C1|2C1|3C1|4C1|5C1|6C1|7C1|8C1|9C1
 C1->0C1|1C1|2C1|3C1|4C1|5C1|6C1|7C1|8C1|9C1|iC2|C2
 C2->$|+C
+//科学计数法
 D -> +D0 | -D0 | D0
 D0 -> 1D1|2D1|3D1|4D1|5D1|6D1|7D1|8D1|9D1
 D1 -> .D2 | D3
@@ -22,6 +28,8 @@ D4 -> eD5 | 0D4 | 1D4 | 2D4 | 3D4 |4D4 | 5D4 | 6D4 | 7D4 | 8D4 | 9D4
 D5 -> +D6 | -D6 | D6
 D6 -> 0D7 | 1D7 |2D7 | 3D7 | 4D7 | 5D7 |6D7 | 7D7 | 8D7 | 9D7
 D7 -> $ | 0D7 | 1D7 |2D7 | 3D7 | 4D7 | 5D7 |6D7 | 7D7 | 8D7 | 9D7
+//分隔符
 Separator -> , | ; | ( | ) |{ | } | [ | ] | \t | \n | \0 | #
+//运算符
 Operator -> +O | -O | *O | /O |%O | =O | <O | >O
 O -> $ | =

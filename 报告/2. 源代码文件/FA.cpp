@@ -152,11 +152,11 @@ void FA::TransToDFA(FA nfa){
     stateCorr["Start"] = n;
     charSet = nfa.getCharSet();
     charSet.erase('$');
-    deal2(nfa,start,n);
+    getDFA(nfa, start, n);
 }
 
 //处理数据，处理完得到DFA
-void FA::deal2(FA nfa, const Node& start,const set<Node>& n) {
+void FA::getDFA(FA nfa, const Node& start, const set<Node>& n) {
     //遍历charSet
     for (char it2 : charSet) {
         int flag = 0, flag2 = 0,flag3 = 1;
@@ -205,7 +205,7 @@ void FA::deal2(FA nfa, const Node& start,const set<Node>& n) {
                 }
                 newN = insertIntoState(name);
                 stateCorr[name] = n2;
-                deal2(nfa, newN, n2);
+                getDFA(nfa, newN, n2);
             } else {
                 //状态存在，加入对应关系
                 newN = insertIntoState(buf);
@@ -216,7 +216,7 @@ void FA::deal2(FA nfa, const Node& start,const set<Node>& n) {
     }
 }
 
-void FA::printEdge() {
+void FA::printNFA() {
     for(const auto& from : transNFA){
         for (const auto& e : from.second) {
             cout<<"from "<<from.first.id<<"["<<from.first.name<<"] through ["<<e.first<<"] to ";
@@ -306,13 +306,15 @@ Node FA::insertIntoState(const string& name) {
 //求输入节点的ε-闭包
 set<Node> FA::closure(const Node& node) {
     set<Node> result;
+    //定义一个栈，用于深度优先搜索
     stack<Node> stack;
+    //将初始节点压入栈中
     stack.push(node);
     result.insert(node);
+    //遍历transNFA表，如果存在ε-转移，加入集合，压栈，反复操作
     while (!stack.empty()) {
         Node current = stack.top();
         stack.pop();
-
         if (transNFA.count(current) > 0 && transNFA[current].count('$') > 0) {
             // 遍历当前节点的所有ε转移
             for (const Node& next : transNFA[current]['$']) {
@@ -514,7 +516,11 @@ vector<Token> LAbyLine(const FA& dfa, const string& line, int n) {
             } else if (ttt.type == CONSTANT && isdigit(ttt.value[0])){
                 v.push_back({ERROR,s,2});
                 v.push_back(ttt);
-            } else {
+            } else if (buf[buf.size()-1] == 'e' || buf[buf.size()-1] == 'E'){
+                v.push_back({ERROR,s,2});
+                ttt.value += buf;
+                v.push_back(ttt);
+            }else {
                 v.push_back({ERROR,s,9});
                 v.push_back(ttt);
             }
@@ -528,15 +534,15 @@ vector<Token> LAbyLine(const FA& dfa, const string& line, int n) {
             i++;
             continue;
         }else{
-            if ((isdigit(buf[0]) && isalpha(l[i])) || isdigit(ttt.value[0]) && isalpha(l[i])){
-                if (!(l[i] == 'i' || l[i] == 'e' || l[i] == 'E')){
+            if (isdigit(ttt.value[0]) && isalpha(l[i])){
+//                if (!(l[i] == 'i')){
                     vector<Token> v;
                     string s;
                     s += l[i];
                     v.push_back({ERROR,s,2});
                     v.push_back(ttt);
                     return v;
-                }
+//                }
             }
             //包含终态，看下一个字符能否被接受，如果不能被接收，创建Token，读取下一个词
             if(transDFA[state][l[i+1]].id == 0){

@@ -57,7 +57,7 @@ public:
     //分析输入的语法，将其转换为NFA
     void GrammarToNFA(const string& path);
     //输出NFA的状态转移关系
-    void printEdge();
+    void printNFA();
     //输出DFA的状态转移关系
     void printDFA();
     //输出字母表中所有的字母
@@ -75,7 +75,7 @@ public:
     //NFA转DFA
     void TransToDFA(FA nfa);
     //NFA转DFA的处理
-    void deal2(FA nfa,const Node& start, const set<Node>& n);
+    void getDFA(FA nfa, const Node& start, const set<Node>& n);
     //获取该自动机的初态
     const Node &getStartState() const;
     //获取该自动机的终态集

@@ -5,7 +5,7 @@ void aaa();
 //这是一条注释
 int main(){
     int i = 8629;
-    float 11a = 94.52;//这是一条注释
+    float a = 94.52;//这是一条注释
     float b = 1.145e+14;
     double c = a + b;//没有
     complex d = 29+52i;//没有
