@@ -74,8 +74,10 @@ void printTree(TreeNode* node, int depth) {
     }
 
     for (int i = 0; i < depth; i++) {
-        cout << "|--"; // 每增加一层深度，缩进2个空格
+        cout << "   ";
+         // 每增加一层深度，缩进3个空格
     }
+    cout << "|--";
     cout << node->symbol << endl;
 
     for (auto child : node->children) {
@@ -620,7 +622,7 @@ void LR::parse(const string& path) {
     }
     cout<<"接收状态：";
     if (stateStack.top().name == "ACC"){
-        cout<<"YES"<<endl;
+        cout<<"YES"<<endl<<"语法分析树："<<endl;
         treeStack.pop();
         printTree(treeStack.top(),0);
     }else
